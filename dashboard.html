@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>AI Grant Vault - Dashboard</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0a0c10;
+            --card-bg: rgba(18, 22, 28, 0.65);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --primary-color: #d4af37;
+            --primary-hover: #b5952f;
+            --gold-glow: rgba(212, 175, 55, 0.4);
+            --success-color: #10b981;
+            --error-color: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; }
+        
+        .gold-accent { color: var(--primary-color); }
+
+        /* Rotating Gears */
+        .gear-bg {
+            position: fixed;
+            z-index: -1;
+            opacity: 0.03;
+            pointer-events: none;
+            color: var(--primary-color);
+        }
+        .gear-bg.gear-1 {
+            width: 800px; height: 800px;
+            top: -200px; left: -200px;
+            animation: spin 60s linear infinite;
+        }
+        .gear-bg.gear-2 {
+            width: 600px; height: 600px;
+            bottom: -150px; right: -150px;
+            animation: spin-reverse 45s linear infinite;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+
+        /* Glass Cards */
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: none;
+            min-height: 44px;
+            min-width: 44px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: #000;
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(45deg) translate(-100%, 0);
+            transition: transform 0.6s ease;
+        }
+        .btn-primary:hover::after {
+            transform: rotate(45deg) translate(100%, 0);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        .btn-outline:hover:not(:disabled) {
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .btn-block { width: 100%; }
+
+        /* Form Inputs */
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            min-height: 44px;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* Layout */
+        #app {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        #sidebar {
+            width: 280px;
+            background: rgba(10, 12, 16, 0.95);
+            border-right: 1px solid var(--border-color);
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: transform 0.3s ease;
+        }
+        #sidebar .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 48px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-links {
+            list-style: none;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            min-height: 44px;
+        }
+        .nav-btn:hover, .nav-btn.active {
+            color: var(--primary-color);
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .nav-btn svg { width: 20px; height: 20px; }
+
+        /* Main Content */
+        #main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            padding: 48px;
+            max-width: 1200px;
+            padding-bottom: 100px;
+            width: 100%;
+        }
+
+        /* Mobile Header */
+        #mobile-header {
+            display: none;
+            padding: 20px 24px;
+            background: rgba(10, 12, 16, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .hamburger {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Views */
+        .view {
+            animation: fadeIn 0.5s ease;
+            min-height: 100vh;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #view-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: -280px; /* offset sidebar margin to center on screen */
+        }
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        /* Dashboard specific */
+        .welcome-bar {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 48px;
+            border-left: 4px solid var(--primary-color);
+        }
+        .progress-tracker {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 48px;
+            padding: 0 20px;
+        }
+        .progress-tracker::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 0; right: 0;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+        .progress-step {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            border: 2px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        .progress-step.completed {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #000;
+        }
+        .progress-step.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            animation: pulse-ring 2s infinite;
+        }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            100% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-complete { background: rgba(16, 185, 129, 0.1); color: var(--success-color); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-active { background: rgba(212, 175, 55, 0.1); color: var(--primary-color); border: 1px solid rgba(212, 175, 55, 0.2); }
+        .status-locked { background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); border: 1px solid var(--border-color); }
+
+        /* Media Queries */
+        @media (max-width: 900px) {
+            #sidebar { transform: translateX(-100%); }
+            #sidebar.open { transform: translateX(0); }
+            #main-content { margin-left: 0; padding: 24px; padding-bottom: 100px; }
+            #mobile-header { display: flex; }
+            #view-login { margin-left: 0; }
+            .progress-tracker { display: none; } /* Simplify on mobile */
+        }
+
+        /* Explicit iOS Overrides */
+        .hide-view { display: none !important; }
+        .show-view-block { display: block !important; }
+        .show-view-flex { display: flex !important; }
+        
+        /* Module specific CSS (assessed to be safe) */
+        .module-page h2 { font-size: 2.5rem; margin-bottom: 32px; color: var(--primary-color); }
+        .module-section { margin-bottom: 48px; }
+        .prompt-box { background: rgba(0,0,0,0.4); border-left: 4px solid var(--primary-color); padding: 24px; border-radius: 0 8px 8px 0; position: relative; margin: 24px 0; }
+        .prompt-label { font-size: 0.75rem; color: var(--primary-color); font-weight: 700; letter-spacing: 0.1em; margin-bottom: 12px; }
+        .prompt-text { font-family: monospace; font-size: 0.9rem; color: #e2e8f0; white-space: pre-wrap; line-height: 1.5; }
+        .copy-btn { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.1); border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
+        .copy-btn:hover { background: rgba(255,255,255,0.2); }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border-color); }
+        
+        .assessment-q { padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .assessment-q:last-child { border-bottom: none; }
+        .btn-yes, .btn-no { padding: 8px 24px; border-radius: 20px; border: 1px solid var(--border-color); background: transparent; color: var(--text-primary); cursor: pointer; transition: all 0.2s; min-height: 44px; }
+        .btn-yes:hover, .btn-yes.active { background: rgba(16, 185, 129, 0.2); border-color: var(--success-color); color: var(--success-color); }
+        .btn-no:hover, .btn-no.active { background: rgba(239, 68, 68, 0.2); border-color: var(--error-color); color: var(--error-color); }
+
+        .expandable-btn { width: 100%; text-align: left; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 16px 20px; color: var(--primary-color); font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; border-radius: 8px; min-height: 44px; }
+        .expandable-content { display: none; padding: 20px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-top: none; border-radius: 0 0 8px 8px; margin-top: -8px; }
+
+        .fade-in-section { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; will-change: opacity, visibility; }
+        .fade-in-section.is-visible { opacity: 1; transform: none; }
+            .assessment-q.answered-yes {
+            background-color: rgba(34, 197, 94, 0.15) !important;
+            border-left: 3px solid rgba(34, 197, 94, 0.5) !important;
+        }
+        .assessment-q.answered-no {
+            background-color: rgba(239, 68, 68, 0.15) !important;
+            border-left: 3px solid rgba(239, 68, 68, 0.5) !important;
+        }
+        .assessment-q {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        .bg-gear {
+            position: fixed;
+            width: 800px;
+            height: 800px;
+            opacity: 0.03;
+            z-index: 0;
+            pointer-events: none;
+            fill: var(--primary-color);
+        }
+        .gear-1 {
+            top: -200px;
+            left: -200px;
+            animation: spin 120s linear infinite;
+        }
+        .gear-2 {
+            bottom: -200px;
+            right: -200px;
+            animation: spin 120s linear infinite reverse;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .vault-door {
+            animation: pulse-glow 4s infinite ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0% { filter: drop-shadow(0 0 5px rgba(212,175,55,0.2)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 25px rgba(212,175,55,0.6)); transform: scale(1.02); }
+            100% { filter: drop-shadow(0 0 5px rgba(212,175,55,0.2)); transform: scale(1); }
+        }
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .orb-1 { width: 400px; height: 400px; top: -100px; left: -100px; }
+        .orb-2 { width: 300px; height: 300px; bottom: -50px; right: -50px; }
+        
+        .glass-card {
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(212,175,55,0.5);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+        }
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg) translateX(-150%);
+            transition: transform 0.6s ease;
+        }
+        .btn-primary:hover::after {
+            transform: rotate(30deg) translateX(150%);
+        }
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            will-change: opacity, visibility;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <svg class="gear-bg gear-1" viewBox="0 0 100 100" fill="currentColor"><path d="M50 0 L55 10 A40 40 0 0 1 70 15 L80 5 L85 10 L75 25 A40 40 0 0 1 85 40 L95 45 L95 55 L85 60 A40 40 0 0 1 75 75 L85 90 L80 95 L70 85 A40 40 0 0 1 55 90 L50 100 L45 100 L40 90 A40 40 0 0 1 25 85 L15 95 L10 90 L20 75 A40 40 0 0 1 10 60 L0 55 L0 45 L10 40 A40 40 0 0 1 20 25 L10 15 L15 10 L25 20 A40 40 0 0 1 40 10 L45 0 Z M50 35 A15 15 0 1 0 50 65 A15 15 0 1 0 50 35"/></svg>
+    <svg class="gear-bg gear-2" viewBox="0 0 100 100" fill="currentColor"><path d="M50 0 L55 10 A40 40 0 0 1 70 15 L80 5 L85 10 L75 25 A40 40 0 0 1 85 40 L95 45 L95 55 L85 60 A40 40 0 0 1 75 75 L85 90 L80 95 L70 85 A40 40 0 0 1 55 90 L50 100 L45 100 L40 90 A40 40 0 0 1 25 85 L15 95 L10 90 L20 75 A40 40 0 0 1 10 60 L0 55 L0 45 L10 40 A40 40 0 0 1 20 25 L10 15 L15 10 L25 20 A40 40 0 0 1 40 10 L45 0 Z M50 35 A15 15 0 1 0 50 65 A15 15 0 1 0 50 35"/></svg>
+
+    <svg style="display: none;">
+        <symbol id="icon-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></symbol>
+        <symbol id="icon-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></symbol>
+        <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></symbol>
+        <symbol id="icon-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></symbol>
+        <symbol id="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></symbol>
+        <symbol id="icon-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></symbol>
+        <symbol id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></symbol>
+        <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></symbol>
+        <symbol id="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></symbol>
+        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+        <symbol id="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></symbol>
+    </svg>
+
+    <svg class="bg-gear gear-1" viewBox="0 0 100 100"><use href="#icon-gear"></use></svg>
+    <svg class="bg-gear gear-2" viewBox="0 0 100 100"><use href="#icon-gear"></use></svg>
+    <div id="app">
+        <nav id="sidebar" style="display: none;">
+            <div class="logo"><svg style="width:24px; height:24px;"><use href="#icon-lock"></use></svg> AI Grant Vault</div>
+            <ul class="nav-links">
+                <li><a href="javascript:void(0)" class="nav-btn nav-action active" data-target="view-dashboard"><svg><use href="#icon-home"></use></svg> Dashboard Home</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn nav-action" data-target="view-dashboard"><svg><use href="#icon-grid"></use></svg> All Modules</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn nav-action" data-target="view-downloads"><svg><use href="#icon-download"></use></svg> My Downloads</a></li>
+            </ul>
+            <ul class="nav-links" style="flex-grow: 0;">
+                <li><a href="javascript:void(0)" class="nav-btn" id="logout-btn"><svg><use href="#icon-logout"></use></svg> Log Out</a></li>
+            </ul>
+        </nav>
+
+        <main id="main-content">
+            <header id="mobile-header">
+                <div class="logo" style="margin: 0; font-family: Outfit, sans-serif; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: 8px;"><svg style="width:24px; height:24px;"><use href="#icon-lock"></use></svg> Vault</div>
+                <button class="hamburger" id="mobile-menu-toggle"><svg style="width:24px; height:24px;"><use href="#icon-menu"></use></svg></button>
+            </header>
+
+            <!-- LOGIN VIEW -->
+            <div id="view-login" class="view show-view-flex">
+                <div class="glass-card login-card">
+                    <h2 class="gold-accent" style="margin-bottom: 8px;">AI Grant Vault</h2>
+                    <p style="margin-bottom: 32px;">Welcome back. The vault is open.</p>
+                    <div style="position: relative; margin-bottom: 16px;">
+                        <input type="password" id="login-password" class="form-input" placeholder="Password" style="padding-right: 48px;" required autocomplete="current-password" autocorrect="off" autocapitalize="off" spellcheck="false">
+                        <svg id="toggle-password" style="position: absolute; right: 16px; top: 12px; width: 24px; height: 24px; color: var(--primary-color); cursor: pointer;"><use href="#icon-eye-off"></use></svg>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px; text-align: left;">
+                        <input type="checkbox" id="login-remember" style="accent-color: var(--primary-color); width: 16px; height: 16px; cursor: pointer;">
+                        <label for="login-remember" style="color: var(--text-secondary); font-size: 0.875rem; cursor: pointer;">Remember me on this device</label>
+                    </div>
+                    <p id="login-error" style="color: var(--error-color); font-size: 0.875rem; display: none; margin-bottom: 16px;">Incorrect password. Please try again.</p>
+                    <button type="button" id="login-btn" class="btn btn-primary btn-block">Enter the Vault</button>
+                </div>
+            </div>
+
+            <!-- DASHBOARD HOME VIEW -->
+            <div id="view-dashboard" class="view hide-view">
+                <div class="glass-card welcome-bar">
+                    <svg class="gold-accent" style="width: 32px; height: 32px;"><use href="#icon-lock"></use></svg>
+                    <div>
+                        <h3>Welcome back. You are inside the AI Grant Vault.</h3>
+                        <p style="margin: 0; font-size: 0.95rem;">Pick up where you left off or review past modules.</p>
+                    </div>
+                </div>
+
+                <div class="progress-tracker" id="progress-tracker-container">
+                    <!-- Steps injected via JS -->
+                </div>
+
+                <div class="module-grid" id="dashboard-grid">
+                    <!-- Cards injected via JS -->
+                </div>
+            </div>
+
+            <!-- MODULES 0-6 (Extracted Content) -->
+<div id="view-module-0" class="view module-page" style="display: none;">
+                <div class="module-header">
+                    <h1>Module 0 — Grant Readiness Assessment</h1>
+                    <p style="font-size: 1.125rem;">Before we open a single AI tool or write a single word of your proposal, we need to answer one critical question: Are you actually ready to receive funding?</p>
+                </div>
+                
+                <div class="glass-card sticky-score" style="padding: 16px 24px; border-color: rgba(212, 175, 55, 0.4);">
+                    <h3 class="gold-accent" style="margin: 0; font-size: 1.5rem;" id="live-score">Your Readiness Score: 0 out of 19</h3>
+                </div>
+
+                <div class="module-content">
+                    <div class="glass-card" style="padding: 24px; border-color: var(--primary-color); margin-bottom: 48px;">
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem;">This assessment is a guide, not a gate. Answer based on your specific organization type. If a question does not apply to your situation, mark it as Yes and continue forward. Your score gives you a strategic recommendation — it does not restrict your access to any module. All seven modules are available to you immediately regardless of your score.</p>
+                    </div>
+
+                    <div id="assessment-container">
+                        <h3>Area 1 — Legal and Organizational Status</h3>
+                        <div class="assessment-q" data-qid="1"><p>1. Do you have official 501(c)(3) nonprofit status or a registered business entity (LLC, S-Corp, C-Corp)?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="2"><p>2. Do you have an active Employer Identification Number (EIN)?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="3"><p>3. Do you have an active, functioning Board of Directors or an official advisory structure?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="4"><p>4. Are your governing documents (bylaws, articles of incorporation, or operating agreements) finalized and accessible?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div><div class="expandable-container" style="margin-bottom:24px;">
+    <button class="expandable-toggle" style="background:none; border:none; color:var(--primary-color); display:flex; align-items:center; cursor:pointer; padding:0; font-family:inherit; font-weight:600; font-size:0.95rem;">
+        <span style="margin-right:8px;">What does this mean?</span>
+        <svg class="expandable-arrow" style="width:16px; height:16px; fill:currentColor; transition: transform 0.3s ease;"><use href="#icon-chevron-down"></use></svg>
+    </button>
+    <div class="expandable-content" style="display:none; margin-top:12px; padding:16px; background:rgba(0,0,0,0.3); border-left:3px solid var(--primary-color); font-size:0.9rem; border-radius:0 4px 4px 0;">
+        Bylaws are the rules that govern how your organization operates — who can vote, how decisions are made, how leadership is selected. Templates are available free online from most state nonprofit associations.
+    </div>
+</div></div>
+
+                        <h3>Area 2 — Program Documentation</h3>
+                        <div class="assessment-q" data-qid="5"><p>5. Do you have a written, standardized description of the specific program or project you want to fund?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="6"><p>6. Have you clearly defined your target population, including specific demographic data?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="7"><p>7. Are your program activities and implementation timelines clearly documented?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="8"><p>8. Do you have a clear Theory of Change or Logic Model explaining how your activities lead to specific outcomes?</p><span class="helper-text">A Theory of Change is a simple diagram or written statement that explains how your program activities lead to specific outcomes. For example: We provide job training which leads to employment which leads to reduced poverty in our community.</span><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div><div class="expandable-container" style="margin-bottom:24px;">
+    <button class="expandable-toggle" style="background:none; border:none; color:var(--primary-color); display:flex; align-items:center; cursor:pointer; padding:0; font-family:inherit; font-weight:600; font-size:0.95rem;">
+        <span style="margin-right:8px;">What does this mean?</span>
+        <svg class="expandable-arrow" style="width:16px; height:16px; fill:currentColor; transition: transform 0.3s ease;"><use href="#icon-chevron-down"></use></svg>
+    </button>
+    <div class="expandable-content" style="display:none; margin-top:12px; padding:16px; background:rgba(0,0,0,0.3); border-left:3px solid var(--primary-color); font-size:0.9rem; border-radius:0 4px 4px 0;">
+        <pre style="font-family: monospace; color: var(--primary-color);">Inputs -> Activities -> Outputs -> Outcomes -> Impact</pre>
+    </div>
+</div></div>
+
+                        <h3>Area 3 — Outcome Tracking</h3>
+                        <div class="assessment-q" data-qid="9"><p>9. Do you consistently track program participation numbers and attendance?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="10"><p>10. Do you collect pre- and post-program data, surveys, or assessments from your participants?</p><span class="helper-text">This means measuring your participants before your program starts and again after it ends. For example giving a survey on day one and the same survey on the last day to show what changed.</span><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="11"><p>11. Have you documented specific success stories or detailed case studies of your impact?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="12"><p>12. Do you have at least one full cycle of outcome data ready to report to a funder?</p><span class="helper-text">A full cycle means you have run your program from start to finish at least once and have real numbers to show what happened. For example completing one full 12-week cohort and documenting the results.</span><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+
+                        <h3>Area 4 — Financial Records</h3>
+                        <div class="assessment-q" data-qid="13"><p>13. Do you have a current, board-approved organizational budget for this fiscal year?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div><div class="expandable-container" style="margin-bottom:24px;">
+    <button class="expandable-toggle" style="background:none; border:none; color:var(--primary-color); display:flex; align-items:center; cursor:pointer; padding:0; font-family:inherit; font-weight:600; font-size:0.95rem;">
+        <span style="margin-right:8px;">What does this mean?</span>
+        <svg class="expandable-arrow" style="width:16px; height:16px; fill:currentColor; transition: transform 0.3s ease;"><use href="#icon-chevron-down"></use></svg>
+    </button>
+    <div class="expandable-content" style="display:none; margin-top:12px; padding:16px; background:rgba(0,0,0,0.3); border-left:3px solid var(--primary-color); font-size:0.9rem; border-radius:0 4px 4px 0;">
+        Board approval means the budget was voted on by the board at the start of the fiscal year. It should be a simple income and expense spreadsheet, and a simple Google Sheets template works fine for small organizations.
+    </div>
+</div></div>
+                        <div class="assessment-q" data-qid="14"><p>14. Do you have a separate, detailed program budget specifically for the work you want funded?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="15"><p>15. Can you produce clean bank statements or formal financial statements (P&L, Balance Sheet) from the past 12 months?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="16"><p>16. If your revenue requires it, have you completed an independent audit or financial review?</p><span class="helper-text">An independent audit is a formal review of your finances by a certified accountant who is not part of your organization. Many foundations only require this if your annual revenue exceeds $500,000. If you are a small organization this question may not apply to you — mark it Yes and continue.</span><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+
+                        <h3>Area 5 — Organizational Capacity</h3>
+                        <div class="assessment-q" data-qid="17"><p>17. Do you have dedicated staff members or committed volunteers assigned to manage grant execution?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div><div class="expandable-container" style="margin-bottom:24px;">
+    <button class="expandable-toggle" style="background:none; border:none; color:var(--primary-color); display:flex; align-items:center; cursor:pointer; padding:0; font-family:inherit; font-weight:600; font-size:0.95rem;">
+        <span style="margin-right:8px;">What does this mean?</span>
+        <svg class="expandable-arrow" style="width:16px; height:16px; fill:currentColor; transition: transform 0.3s ease;"><use href="#icon-chevron-down"></use></svg>
+    </button>
+    <div class="expandable-content" style="display:none; margin-top:12px; padding:16px; background:rgba(0,0,0,0.3); border-left:3px solid var(--primary-color); font-size:0.9rem; border-radius:0 4px 4px 0;">
+        This does not require a full-time grant writer. Even one part-time volunteer who is responsible for tracking deadlines and submitting reports qualifies. What funders want to see is that someone is accountable for compliance.
+    </div>
+</div></div>
+                        <div class="assessment-q" data-qid="18"><p>18. Do you have a reliable system in place for tracking reporting deadlines and compliance requirements?</p><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                        <div class="assessment-q" data-qid="19"><p>19. Does your accounting system have the ability to track and manage restricted grant funds separately from general operating funds?</p><span class="helper-text">Restricted funds are grant dollars that must be spent only on the specific program the funder approved. Your accounting system needs to be able to show exactly how those dollars were spent separately from your general operating budget. QuickBooks, Wave, and even a dedicated spreadsheet can handle this.</span><div class="assessment-actions"><button class="btn-assess btn-yes">Yes</button><button class="btn-assess btn-no">No</button></div></div>
+                    </div>
+                    
+                    <div id="assessment-results" style="display: none; margin-top: 32px;"></div>
+                </div>
+                <div class="module-footer">
+                    <div class="nav-arrows">
+                        <button class="btn btn-outline" disabled>&larr; Previous Module</button>
+                        <button class="btn btn-outline" onclick="goTo('view-module-1') ">Next Module &rarr;</button>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 8px;">Completed the assessment? Mark this module complete and continue to Module 1. All modules are unlocked and available to you now.</p>
+                        <button class="btn btn-primary" onclick="markComplete(0)">Mark as Complete</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= VIEW: MODULE 1 ================= -->
+            <div id="view-module-1" class="view module-page" style="display: none;">
+                <div class="module-header">
+                    <h1>Module 1 — The AI Scavenger Hunt</h1>
+                    <p style="font-size: 1.125rem;">Sourcing hidden, hyper-local grants that your competitors have never heard of.</p>
+                </div>
+                <div class="module-content">
+
+                    <!-- Beginner Orientation Section -->
+                    <div class="glass-card highlight" style="margin-bottom: 48px; border-color: var(--primary-color);">
+                        <h2 class="gold-accent" style="margin-top: 0;">Before We Begin — Understanding AI Tools</h2>
+                        <p>If you have never used an AI tool before, or if you have only experimented with it casually, this section is for you. Do not skip it. Understanding how to communicate with AI is the foundation of this entire system. Students who take 10 minutes to read this section get dramatically better results from every prompt in the course.</p>
+                        
+                        <h3 style="margin-top: 32px; color: #fff;">What Is AI and How Does It Work For Grant Writing?</h3>
+                        <p>Artificial Intelligence tools like ChatGPT, Claude, and Perplexity are language tools that respond to written instructions. You type a request, they generate a response. The quality of what they produce depends almost entirely on the quality of the instructions you give them. Think of it like hiring a highly educated assistant who knows nothing about your organization yet. The more clearly and specifically you explain what you need, the better the work they produce. This is why the AI Grant Vault does not just hand you a list of prompts — it teaches you how to structure those prompts so the AI produces professional, strategic, grant-ready content every single time.</p>
+                        
+                        <h3 style="margin-top: 32px; color: #fff;">What Is a Prompt?</h3>
+                        <p>A prompt is simply the instruction you type into an AI tool. It can be one sentence or several paragraphs. The more context and direction you provide in your prompt, the better the AI's response will be. A weak prompt produces weak output. A strategic prompt produces professional output. This course gives you pre-built prompts for every stage of the grant writing process, but understanding why they are structured the way they are will help you adapt them to your specific situation.</p>
+                        
+                        <details class="expandable-help" style="margin-top: 24px;">
+                            <summary>See an example of a weak prompt versus a strong prompt</summary>
+                            <div class="expandable-content" style="background: rgba(0,0,0,0.5);">
+                                <p><strong>Weak prompt:</strong> "Write me a grant for my nonprofit."</p>
+                                <p style="margin-bottom: 24px;"><strong>Why it fails:</strong> The AI has no idea who you are, what you do, who you serve, how much money you need, or what funder you are applying to. It will produce something generic that no funder will take seriously.</p>
+                                
+                                <p><strong>Strong prompt:</strong> "Act as a Master Grant Writer with a 95 percent win rate. I am applying for a $25,000 community health grant from the Smith Family Foundation. My organization provides free weekly nutrition education to low-income seniors aged 65 and older in Atlanta, Georgia. We have served 312 seniors since 2022 and reduced emergency room visits among participants by 18 percent according to our 2024 impact report. Write a 250-word executive summary that leads with the problem, presents our solution and timeline, and ends with exactly how the $25,000 will be used and what measurable outcome it will produce."</p>
+                                <p style="margin-bottom: 0;"><strong>Why it works:</strong> The AI now knows your role, your funder, your target population, your geography, your track record, your data, and your exact output requirement. It will produce something a reviewer can actually score.</p>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Hamburger Method Section -->
+                    <div class="glass-card highlight" style="background: rgba(212, 175, 55, 0.05); margin-bottom: 48px;">
+                        <h2 class="gold-accent" style="margin-top: 0;">The Hamburger Method — How to Structure Any AI Prompt</h2>
+                        <p>Every great AI prompt has three layers, just like a hamburger. When you build your prompts this way you will get professional results every single time.</p>
+                        
+                        <h4 style="color: #fff; margin-top: 24px; font-size: 1.125rem;">THE TOP BUN — The Role</h4>
+                        <p>Tell the AI exactly who it is supposed to be before it starts writing. This sets its entire frame of reference.</p>
+                        <p style="font-style: italic; color: var(--primary-color);">Example: 'Act as a Master Grant Writer with a 95 percent win rate who specializes in community nonprofit funding.'</p>
+
+                        <h4 style="color: #fff; margin-top: 24px; font-size: 1.125rem;">THE FILLING — The Task and Context</h4>
+                        <p>This is the most important layer. Tell the AI exactly what you need it to do, who your organization is, who you serve, what data you have, and what the specific grant requires. The more detail you provide here the better the output.</p>
+                        <p style="font-style: italic; color: var(--primary-color);">Example: 'Write a 250-word Executive Summary for a grant application requesting $15,000 from the Johnson Community Foundation. My organization provides after-school coding education to underserved youth aged 10 to 14 in Detroit, Michigan. We have served 180 students since 2023 and 87 percent of our graduates passed their school's standardized technology assessment.'</p>
+
+                        <h4 style="color: #fff; margin-top: 24px; font-size: 1.125rem;">THE BOTTOM BUN — The Quality Standard</h4>
+                        <p>Tell the AI exactly what good output looks like. Specify the tone, the length, the format, and anything to avoid.</p>
+                        <p style="font-style: italic; color: var(--primary-color); margin-bottom: 24px;">Example: 'The tone should be professional, data-driven, and urgent but never desperate. Avoid words like groundbreaking or revolutionary. Use short active sentences. Format the response as three tight paragraphs.'</p>
+                        
+                        <p style="margin-bottom: 0;">When all three layers are present the AI produces output that sounds like it was written by a professional who has worked with your organization for years. When any layer is missing the output suffers. Every prompt in the AI Grant Vault Master Prompt Library is already built using this three-layer structure. Now you know why.</p>
+                    </div>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 48px; text-align: center;">Bookmark this page or screenshot this framework. You will use it every time you write or adapt a prompt throughout this course and beyond.</p>
+
+                    <!-- AI Platform Options Section -->
+                    <h2>Which AI Tool Should You Use?</h2>
+                    <p>This course works with multiple AI platforms. Here are the three we recommend and when to use each one. You do not need all three — start with whichever one you are most comfortable with or have access to already.</p>
+                    
+                    <div class="platform-grid">
+                        <div class="glass-card platform-card">
+                            <svg class="platform-icon"><use href="#icon-globe"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg>
+                            <h3 style="color: #fff;">Perplexity AI</h3>
+                            <p><strong>Best for:</strong> Grant research and finding hyper-local funding opportunities</p>
+                            <p><strong>Why:</strong> Perplexity searches the live internet and returns current, sourced results. This makes it ideal for finding active grants with real deadlines rather than outdated information.</p>
+                            <p><strong>Free tier available:</strong> Yes</p>
+                            <p><strong>How to access:</strong> Go to perplexity.ai and create a free account. No project setup needed — just paste the search prompt directly into the chat.</p>
+                            <p><strong>Limitation:</strong> Less effective for long-form writing tasks. Use it for research only.</p>
+                        </div>
+                        <div class="glass-card platform-card">
+                            <svg class="platform-icon"><use href="#icon-message"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg>
+                            <h3 style="color: #fff;">ChatGPT</h3>
+                            <p><strong>Best for:</strong> Proposal drafting, editing, and general writing tasks</p>
+                            <p><strong>Why:</strong> ChatGPT is the most widely known AI tool and has strong writing capabilities. The free tier works for most tasks in this course.</p>
+                            <p><strong>Free tier available:</strong> Yes</p>
+                            <p><strong>How to access:</strong> Go to chat.openai.com and create a free account.</p>
+                            <p><strong>Setting up a Project:</strong> ChatGPT calls these Custom GPTs or simply Projects depending on your account type. For this course create a new chat, paste your Pre-Write Matrix context from Module 2 at the start of every session, and the AI will retain that context for the duration of the conversation.</p>
+                            <p><strong>Limitation:</strong> The free tier has usage limits and may be slower during peak hours.</p>
+                        </div>
+                        <div class="glass-card platform-card">
+                            <svg class="platform-icon"><use href="#icon-sparkle"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg>
+                            <h3 style="color: #fff;">Claude by Anthropic</h3>
+                            <p><strong>Best for:</strong> Long-form proposal writing, nuanced editing, and complex prompt responses</p>
+                            <p><strong>Why:</strong> Claude is our top recommendation for the actual writing phases of this course. It produces more natural, less robotic prose than other tools and handles long documents exceptionally well. It is also the tool this entire course was built and tested with.</p>
+                            <p><strong>Free tier available:</strong> Yes</p>
+                            <p><strong>How to access:</strong> Go to claude.ai and create a free account.</p>
+                            <p><strong>Setting up a Claude Project:</strong> This is a powerful feature that makes the AI remember your organizational context across multiple sessions. Here is how to set it up in three steps.</p>
+                            <p>Step 1 — Log in to claude.ai and click on Projects in the left sidebar. Click New Project and name it something like My Grant Writing Assistant.</p>
+                            <p>Step 2 — Inside the project click on Project Instructions or Set Instructions. This is where you paste your completed Pre-Write Matrix from Module 2. Once saved Claude will remember your organization's mission, target population, track record, and voice every time you open this project — you will not have to re-enter your context every session.</p>
+                            <p>Step 3 — All your grant writing conversations inside this project will be connected. You can reference previous drafts, ask for revisions, and build on prior sessions without starting from scratch each time.</p>
+                            <p><strong>Limitation:</strong> The free tier has message limits per day. If you hit the limit wait a few hours or consider the paid plan at $20 per month for unlimited access during heavy drafting phases.</p>
+                        </div>
+                    </div>
+
+                    <div style="border: 1px solid var(--primary-color); padding: 16px; border-radius: 8px; text-align: center; margin-bottom: 64px;">
+                        <p style="margin: 0; color: var(--primary-color); font-weight: 600;">Our recommended workflow: Use Perplexity for Module 1 grant research. Switch to Claude with a Project set up for Modules 2 through 6. This combination gives you the best research results and the best writing output.</p>
+                    </div>
+
+                    <!-- The Core System -->
+                    <hr>
+                    <h2>The System: Sourcing Hyper-Local Grants</h2>
+                    
+                    <h3>Step 1 — Define Your Demographics Before You Search</h3>
+                    <p>Before you open any AI tool write down the answers to these three questions on a piece of paper or in a notes document. You will use these answers in every prompt you run in this module.</p>
+                    <ul>
+                        <li><strong>Who exactly do you serve?</strong> Be as specific as possible. Include age ranges, geographic location, income level, race or ethnicity if relevant to your program, and any other defining characteristics. Example: Low-income single mothers between the ages of 18 and 35 living in Maricopa County, Arizona.</li>
+                        <li><strong>What exactly do you do for them?</strong> Describe your core program activity in one sentence. Example: We provide 12-week financial literacy and credit building workshops.</li>
+                        <li><strong>What is your legal status and location?</strong> Example: We are a registered 501c3 nonprofit based in Phoenix, Arizona, operating since 2021.</li>
+                    </ul>
+                    <p>Having these three answers written down before you start searching will make every prompt you run significantly more targeted and every result significantly more useful.</p>
+                    
+                    <h3>Step 2 — Execute the Hyper-Local Search Prompt</h3>
+                    <p>Open Perplexity.ai or your preferred AI tool. Start a new search or conversation. Copy the Hyper-Local Scavenger Hunt prompt from your Downloads section, fill in the bracketed fields with your specific information from Step 1, and paste it into the AI.</p>
+                    <p><strong>Important note for Claude users:</strong> If you are using Claude paste this prompt directly into your Grant Writing Project so the results are saved alongside your other grant materials.</p>
+                    
+                    <div class="prompt-container">
+                        <div class="prompt-header">
+                            <span class="prompt-label">MODULE 1 PROMPT — Copy This Exactly</span>
+                            <button class="btn-copy" onclick="copyToClipboard(this, `Act as an expert nonprofit funding researcher. I need to locate 5 active, currently open grants that fund organizations executing [Insert Core Activity] in [Insert City, County, and State]. Specifically seek out community foundations, corporate giving programs such as banks or local utilities, and family foundations. Do not provide expired grants and do not provide massive national grants like the Gates Foundation. Supply the name of the grant, the deadline, the average award amount, and the direct URL to the application guidelines.`)">
+                                <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg> Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="prompt-body">Act as an expert nonprofit funding researcher. I need to locate 5 active, currently open grants that fund organizations executing [Insert Core Activity] in [Insert City, County, and State]. Specifically seek out community foundations, corporate giving programs such as banks or local utilities, and family foundations. Do not provide expired grants and do not provide massive national grants like the Gates Foundation. Supply the name of the grant, the deadline, the average award amount, and the direct URL to the application guidelines.</div>
+                    </div>
+                    <details class="expandable-help" style="margin-bottom: 24px;">
+                        <summary>How to fill in the brackets</summary>
+                        <div class="expandable-content">
+                            <p>Replace <strong>[Insert Core Activity]</strong> with your specific program description from Step 1. Be specific. Instead of youth services write after-school coding education for underserved youth aged 10 to 14. Instead of community health write free nutrition education for low-income seniors aged 65 and older.</p>
+                            <p style="margin-bottom:0;">Replace <strong>[Insert City, County, and State]</strong> with your exact service area. Include all three levels of geography — city, county, and state — to give the AI the best chance of finding hyper-local results. Example: Phoenix, Maricopa County, Arizona.</p>
+                        </div>
+                    </details>
+
+                    <p><strong>What to expect:</strong> The AI should return a list of five or more specific grant programs with names, deadlines, award amounts, and links. If the results are too broad or return national grants instead of local ones add this line to your prompt: Focus only on grants available in my specific city and county. Do not include national foundations or federal programs.</p>
+
+                    <h3>Step 3 — Qualify Every Lead Before You Add It to Your Pipeline</h3>
+                    <p>Not every grant the AI finds will be worth your time. Before adding any grant to your pipeline tracker run it through this three-question qualification filter:</p>
+                    <ul>
+                        <li><strong>Question 1 — Geographic match:</strong> Does their funding footprint explicitly include your city, county, or state? If their guidelines say they only fund in Illinois and you are in Arizona do not apply. Mark it as a C-Target in your tracker and move on.</li>
+                        <li><strong>Question 2 — Deadline viability:</strong> Is the deadline more than three weeks away? If the deadline is in less than three weeks you do not have enough time to complete a quality application using this system. Flag it for the next cycle and note the deadline in your tracker.</li>
+                        <li><strong>Question 3 — Mission alignment:</strong> Read the funder's stated priorities carefully. Does your specific program match what they say they fund? Not loosely match — specifically match. If they fund arts education and you run a job training program that is not a match regardless of how you frame it. Do not waste your time. Move to the next result.</li>
+                    </ul>
+
+                </div>
+                <div class="module-footer">
+                    <div class="nav-arrows">
+                        <button class="btn btn-outline" onclick="goTo('view-module-0') ">&larr; Previous Module</button>
+                        <button class="btn btn-outline" onclick="goTo('view-module-2') ">Next Module &rarr;</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="markComplete(1)">Mark as Complete</button>
+                </div>
+            </div>
+
+            <!-- ================= VIEW: MODULE 2 ================= -->
+            <div id="view-module-2" class="view module-page" style="display: none;">
+                <div class="module-header">
+                    <h1>Module 2 — The Pre-Write Matrix</h1>
+                    <p style="font-size: 1.125rem;">Building the context architecture so the AI writes exactly like your organization.</p>
+                </div>
+                <div class="module-content">
+                    <h3>The Objective:</h3>
+                    <p>If you ask AI to "write a grant", it will write a generic, robotic, immediately-rejected proposal. AI needs a <em>Pre-Write Matrix</em>. This is where you feed the AI your organizational DNA.</p>
+                    
+                    <h3>The System:</h3>
+                    <ol>
+                        <li><strong>The Problem Statement:</strong> What specific, measurable problem are you solving?</li>
+                        <li><strong>The Solution:</strong> How does your program specifically solve that?</li>
+                        <li><strong>Organizational Capacity:</strong> Why are <em>you</em> the best team to solve this? What is your track record?</li>
+                    </ol>
+
+                    <div class="prompt-container">
+                        <div class="prompt-header">
+                            <span class="prompt-label">MODULE 2 PROMPT — The Context Injection Prompt</span>
+                            <button class="btn-copy" onclick="copyToClipboard(this, `Act as a Master Grant Writer with a 95% win rate. I will feed you the foundational context of my organization. I do not want you to draft any part of the grant proposal yet. I solely want you to review this, analyze our tone, and state 'Context Accepted. I am ready to draft the proposal.'\n\nOrganization Name: [Name]\nOur Mission: [Mission Statement]\nThe Problem We Solve: [Specific, data-backed problem]\nOur Solution: [How exactly you solve it]\nOur Track Record: [Key stats, e.g., 'We have helped 500 families since 2020']\n\nAcknowledge receipt of this context.`)">
+                                <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg> Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="prompt-body">Act as a Master Grant Writer with a 95% win rate. I will feed you the foundational context of my organization. I do not want you to draft any part of the grant proposal yet. I solely want you to review this, analyze our tone, and state 'Context Accepted. I am ready to draft the proposal.'
+
+Organization Name: [Name]
+Our Mission: [Mission Statement]
+The Problem We Solve: [Specific, data-backed problem]
+Our Solution: [How exactly you solve it]
+Our Track Record: [Key stats, e.g., 'We have helped 500 families since 2020']
+
+Acknowledge receipt of this context.</div>
+                    </div>
+
+                    <h3>The Homework:</h3>
+                    <p>Complete your Pre-Write Matrix and feed it to the AI to prime your session.</p>
+                </div>
+                <div class="module-footer">
+                    <div class="nav-arrows">
+                        <button class="btn btn-outline" onclick="goTo('view-module-1') ">&larr; Previous Module</button>
+                        <button class="btn btn-outline" onclick="goTo('view-module-3') ">Next Module &rarr;</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="markComplete(2)">Mark as Complete</button>
+                </div>
+            </div>
+
+            <!-- ================= VIEW: MODULE 3 ================= -->
+            <div id="view-module-3" class="view module-page" style="display: none;">
+                <div class="module-header">
+                    <h1>Module 3 — Drafting the Proposal</h1>
+                    <p style="font-size: 1.125rem;">Generating the four core pillars of a competitive grant narrative.</p>
+                </div>
+                <div class="module-content">
+                    <h3>Pillar 1: The Executive Summary</h3>
+                    <p>This is the most important page. If this page fails, the reviewer will not read the rest.</p>
+                    
+                    <div class="prompt-container">
+                        <div class="prompt-header">
+                            <span class="prompt-label">MODULE 3 PROMPT — The Executive Summary Generator</span>
+                            <button class="btn-copy" onclick="copyToClipboard(this, `Based on the context I provided, compose a 250-word Executive Summary for a grant application requesting $[Amount] from [Name of Foundation]. The summary must strictly adhere to this structure:\nParagraph 1: The specific problem and the target demographic.\nParagraph 2: Our proposed solution and the timeline.\nParagraph 3: Exactly what the $[Amount] will be utilized for and the anticipated measurable outcome.\nTone: Professional, data-driven, urgent but not desperate. Avoid terms like 'groundbreaking' or 'revolutionary'.`)">
+                                <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg> Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="prompt-body">Based on the context I provided, compose a 250-word Executive Summary for a grant application requesting $[Amount] from [Name of Foundation]. The summary must strictly adhere to this structure: 
+Paragraph 1: The specific problem and the target demographic.
+Paragraph 2: Our proposed solution and the timeline.
+Paragraph 3: Exactly what the $[Amount] will be utilized for and the anticipated measurable outcome.
+Tone: Professional, data-driven, urgent but not desperate. Avoid terms like 'groundbreaking' or 'revolutionary'.</div>
+                    </div>
+
+                    <h3>Pillar 2: The Background & Need</h3>
+                    <p>This is where you tell the data-backed story.</p>
+                    
+                    <div class="prompt-container">
+                        <div class="prompt-header">
+                            <span class="prompt-label">MODULE 3 PROMPT — The Data-Backed Story</span>
+                            <button class="btn-copy" onclick="copyToClipboard(this, `Write the 'Organizational Background and Statement of Need' section for this proposal. It should be approximately 500 words. Begin by establishing our credibility and track record. Then, transition to the specific, urgent problem we are addressing right now. Leave placeholders like [Insert Statistic Here] where I need to insert local data to strengthen the argument. Employ strong, active voice.`)">
+                                <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg> Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="prompt-body">Write the 'Organizational Background and Statement of Need' section for this proposal. It should be approximately 500 words. Begin by establishing our credibility and track record. Then, transition to the specific, urgent problem we are addressing right now. Leave placeholders like [Insert Statistic Here] where I need to insert local data to strengthen the argument. Employ strong, active voice.</div>
+                    </div>
+
+                    <h3>Pillar 3: Project Description & Objectives</h3>
+                    <p>What exactly are you going to do?</p>
+                    
+                    <div class="prompt-container">
+                        <div class="prompt-header">
+                            <span class="prompt-label">MODULE 3 PROMPT — S.M.A.R.T. Objectives</span>
+                            <button class="btn-copy" onclick="copyToClipboard(this, `I need to outline the objectives for this project. Translate our core solution into 3 to 5 S.M.A.R.T. (Specific, Measurable, Achievable, Relevant, Time-bound) objectives. Format them as bullet points. Each objective must explicitly state *who* will be impacted, *what* the outcome will be, *how* it will be measured, and *when* it will occur.`)">
+                                <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg> Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="prompt-body">I need to outline the objectives for this project. Translate our core solution into 3 to 5 S.M.A.R.T. (Specific, Measurable, Achievable, Relevant, Time-bound) objectives. Format them as bullet points. Each objective must explicitly state *who* will be impacted, *what* the outcome will be, *how* it will be measured, and *when* it will occur.</div>
+                    </div>
+
+                    <h3>Pillar 4: Evaluation</h3>
+                    <p>How do you prove it worked?</p>
+                    
+                    <div class="prompt-container">
+                        <div class="prompt-header">
+                            <span class="prompt-label">MODULE 3 PROMPT — Evaluation Framework</span>
+                            <button class="btn-copy" onclick="copyToClipboard(this, `Write the 'Evaluation and Outcomes' section of the proposal. Detail exactly how we will track the success of the S.M.A.R.T. objectives you just created. Describe both the quantitative metrics (e.g., attendance logs, pre/post test scores) and the qualitative metrics (e.g., participant interviews, staff observations) we will utilize. Mention that we will deliver a final impact report to the funder.`)">
+                                <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg> Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="prompt-body">Write the 'Evaluation and Outcomes' section of the proposal. Detail exactly how we will track the success of the S.M.A.R.T. objectives you just created. Describe both the quantitative metrics (e.g., attendance logs, pre/post test scores) and the qualitative metrics (e.g., participant interviews, staff observations) we will utilize. Mention that we will deliver a final impact report to the funder.</div>
+                    </div>
+
+                    <hr>
+                    <h3>The Editing Rule:</h3>
+                    <p>Never submit raw AI text. Delete fluff words. Use short, strong, active sentences.</p>
+                </div>
+                <div class="module-footer">
+                    <div class="nav-arrows">
+                        <button class="btn btn-outline" onclick="goTo('view-module-2') ">&larr; Previous Module</button>
+                        <button class="btn btn-outline" onclick="goTo('view-module-4') ">Next Module &rarr;</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="markComplete(3)">Mark as Complete</button>
+                </div>
+            </div>
+
+            <!-- ================= VIEW: MODULE 4 ================= -->
+            <div id="view-module-4" class="view module-page" style="display: none;">
+                <div class="module-header">
+                    <h1>Module 4 — Budgeting and Final Polish</h1>
+                    <p style="font-size: 1.125rem;">Aligning your narrative with your financials and scoring your draft.</p>
+                </div>
+                <div class="module-content">
+                    <h3>The Alignment Check</h3>
+                    <p>The most common reason for rejection is a budget that does not match the narrative. Run this check to catch missing line items.</p>
+                    
+                    <div class="prompt-container">
+                        <div class="prompt-header">
+                            <span class="prompt-label">MODULE 4 PROMPT — Budget Alignment Check</span>
+                            <button class="btn-copy" onclick="copyToClipboard(this, `Below, I will paste the entire narrative draft of my grant proposal, followed by the line-item budget I have created. I need you to act as a ruthless Grant Reviewer.\n1. Cross-reference the narrative against the budget.\n2. Highlight any activity or item mentioned in the narrative that does NOT possess a corresponding cost in the budget.\n3. Highlight any cost in the budget that is NOT justified or explained in the narrative.\n\n[Paste Narrative Here]\n---\n[Paste Budget Here]`)">
+                                <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg> Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="prompt-body">Below, I will paste the entire narrative draft of my grant proposal, followed by the line-item budget I have created. I need you to act as a ruthless Grant Reviewer. 
+1. Cross-reference the narrative against the budget. 
+2. Highlight any activity or item mentioned in the narrative that does NOT possess a corresponding cost in the budget. 
+3. Highlight any cost in the budget that is NOT justified or explained in the narrative.
+
+[Paste Narrative Here]
+---
+[Paste Budget Here]</div>
+                    </div>
+
+                    <h3>The Rubric Review</h3>
+                    <p>Score your proposal against the funder's actual grading rubric.</p>
+                    
+                    <div class="prompt-container">
+                        <div class="prompt-header">
+                            <span class="prompt-label">MODULE 4 PROMPT — Final Rubric Polish</span>
+                            <button class="btn-copy" onclick="copyToClipboard(this, `Below is the grading rubric provided by the foundation, followed by my completed grant proposal. Act as the Foundation's Lead Evaluator. Grade my proposal strictly against this rubric out of 100 points. Be harsh. If I lose points in any section, tell me exactly which sentences to alter or add to achieve a perfect score.\n\n[Paste Rubric Here]\n---\n[Paste Final Proposal Draft Here]`)">
+                                <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg> Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="prompt-body">Below is the grading rubric provided by the foundation, followed by my completed grant proposal. Act as the Foundation's Lead Evaluator. Grade my proposal strictly against this rubric out of 100 points. Be harsh. If I lose points in any section, tell me exactly which sentences to alter or add to achieve a perfect score.
+
+[Paste Rubric Here]
+---
+[Paste Final Proposal Draft Here]</div>
+                    </div>
+
+                </div>
+                <div class="module-footer">
+                    <div class="nav-arrows">
+                        <button class="btn btn-outline" onclick="goTo('view-module-3') ">&larr; Previous Module</button>
+                        <button class="btn btn-outline" onclick="goTo('view-module-5') ">Next Module &rarr;</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="markComplete(4)">Mark as Complete</button>
+                </div>
+            </div>
+
+            <!-- ================= VIEW: MODULE 5 ================= -->
+            <div id="view-module-5" class="view module-page" style="display: none;">
+                <div class="module-header">
+                    <h1>Module 5 — Awarded Grant Reverse Engineering</h1>
+                    <p style="font-size: 1.125rem;">The strategic advantage: studying real winning proposals instead of guessing.</p>
+                </div>
+                <div class="module-content">
+                    <h2>STEP 1 â€” FINDING AWARDED GRANT DATA</h2>
+<p>To reverse engineer a win you first need to find the data. Here is the step-by-step system for surfacing awarded grant information.</p>
+<h4>Source 1 â€” Government Grant Databases</h4>
+<p>For federal and state funding transparency is mandated by law. Use USASpending.gov and Grants.gov award records to search for your specific grant program. You can see exactly which organizations won, the award amounts, and often the project abstracts that summarize their winning narrative.</p>
+<h4>Source 2 â€” Foundation 990 Tax Forms</h4>
+<p>Private foundations must file 990-PF tax returns which are goldmines of competitive intelligence. Use the ProPublica Nonprofit Explorer or the IRS Tax Exempt Organization Search. Pull the most recent 990 for a foundation you want to target. Scroll to the Grants and Allocations section. You will see a line-by-line list of exactly who they funded, for what purpose, and for how much.</p>
+<h4>Source 3 â€” Foundation Annual Reports</h4>
+<p>Many medium to large foundations publish digital annual reports or maintain a Past Grantees page on their website. These often include detailed program descriptions and success metrics from the winning organizations.</p>
+<h4>Source 4 â€” Direct Peer Outreach</h4>
+<p>The most underutilized method is simply asking. Identify a peer organization in a different geographic region so you are not direct competitors. Ask if they would be willing to share a redacted version of their winning narrative. Most development professionals will say yes when approached respectfully.</p>
+
+<h2>STEP 2 â€” THE ANALYSIS FRAMEWORK</h2>
+<p>Once you have a winning abstract, annual report summary, or full proposal you must analyze it. Do not just read it â€” dissect it using this five-point framework.</p>
+<ol>
+    <li style="margin-bottom:8px;"><strong>The Problem Statement</strong> â€” What specific language did the winning organization use to describe the urgency of their problem? What data points did they highlight? Was the framing emotional, data-driven, or a combination of both?</li>
+    <li style="margin-bottom:8px;"><strong>The Solution Framing</strong> â€” How did they frame their solution? How did they differentiate their approach from generic interventions? What made their solution sound more credible or more specific than alternatives?</li>
+    <li style="margin-bottom:8px;"><strong>Measurable Objectives</strong> â€” What did their success metrics look like? Did they promise broad community changes or highly specific percentage-based outcomes? Note the exact format of how they stated their goals.</li>
+    <li style="margin-bottom:8px;"><strong>Budget Reality</strong> â€” How large was their total program budget relative to the award amount they received? Did they ask the funder to cover 100% of the project costs or did they show matching funds or cost sharing? Many funders favor organizations that demonstrate other funding sources.</li>
+    <li style="margin-bottom:8px;"><strong>Funder Alignment</strong> â€” What were the funder's stated priorities on their website and how specifically did the winning proposal mirror those exact priorities? Look for language that was almost directly lifted from the funder's guidelines â€” this is intentional and strategic, not lazy.</li>
+</ol>
+
+<h2>Step 3: AI Pattern Extraction</h2>
+                    <p>Once you secure the text from a winning proposal or abstract, you will use AI to analyze why it succeeded. Paste the winning text into Claude or ChatGPT alongside this prompt:</p>
+                    
+                    <div class="prompt-container">
+                        <div class="prompt-header">
+                            <span class="prompt-label">MODULE 5 PROMPT — AI Pattern Extraction</span>
+                            <button class="btn-copy" onclick="copyToClipboard(this, `I am providing you with the text of a successful, funded grant proposal. I need you to act as an expert grant reviewer and reverse-engineer this text.\n\nAnalyze the text and furnish:\n1. The exact tone and reading level utilized.\n2. The ratio of data/statistics to emotional storytelling.\n3. The specific structure of their problem statement.\n4. The recurring keywords or thematic priorities they emphasized.\n\nHere is the winning text: [PASTE TEXT]`)">
+                                <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg> Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="prompt-body">I am providing you with the text of a successful, funded grant proposal. I need you to act as an expert grant reviewer and reverse-engineer this text.
+
+Analyze the text and furnish:
+1. The exact tone and reading level utilized.
+2. The ratio of data/statistics to emotional storytelling.
+3. The specific structure of their problem statement.
+4. The recurring keywords or thematic priorities they emphasized.
+
+Here is the winning text: [PASTE TEXT]</div>
+                    </div>
+
+                    <h2>Step 4: The Application Phase</h2>
+                    <p>The AI will generate the blueprint. You will then apply that blueprint to your own proposal to mirror the exact linguistic framework that the funder rewards.</p>
+                </div>
+                <div class="module-footer">
+                    <div class="nav-arrows">
+                        <button class="btn btn-outline" onclick="goTo('view-module-4') ">&larr; Previous Module</button>
+                        <button class="btn btn-outline" onclick="goTo('view-module-6') ">Next Module &rarr;</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="markComplete(5)">Mark as Complete</button>
+                </div>
+            </div>
+
+            <!-- ================= VIEW: MODULE 6 ================= -->
+            <div id="view-module-6" class="view module-page" style="display: none;">
+                <div class="module-header">
+                    <h1>Module 6 — Building a Grant Pipeline</h1>
+                    <p style="font-size: 1.125rem;">Shifting from playing the lottery to managing a reliable revenue stream.</p>
+                </div>
+                <div class="module-content">
+                    <h2>STEP 1 â€” BUILDING AND QUALIFYING YOUR TARGET LIST</h2>
+<p>You cannot build a pipeline with only two targets. You need volume and you need to qualify that volume before you spend a single hour writing.</p>
+<h4>Sourcing</h4>
+<p>Use the hyper-local sourcing methods from Module 1 to generate an initial raw list of 25 to 30 potential funders in your geographic area. Do not edit the list yet â€” get the volume first.</p>
+<h4>The 3-Factor Qualification Score</h4>
+<p>Evaluate each of the 30 funders using three simple metrics. <strong>Geographic Fit</strong> â€” Do they explicitly fund in your exact city, county, or state? If their guidelines say they only fund in Illinois and you are in Arizona do not apply regardless of how good the mission alignment looks. <strong>Mission Alignment</strong> â€” Does your specific program perfectly match their stated funding priorities? Not loosely match â€” specifically match. If they fund arts education and you run a job training program that is not a match no matter how you frame it. <strong>Award Size</strong> â€” Is their average award size appropriate for your budget? You should not ask for $50,000 from a funder whose average award is $2,000. That mismatch signals that you did not do your research and it will cost you the application.</p>
+<h4>Ranking Your List</h4>
+<p>Categorize your raw list into three actionable tiers. <strong>A-Targets</strong> â€” Highest fit, highest probability. You meet all three factors perfectly. These get applications immediately. Never have fewer than five A-Targets active at any time. <strong>B-Targets</strong> â€” Good fit but missing one factor. For example mission aligns perfectly but they are slightly outside your primary geography. Worth applying but secondary priority. Schedule these after your A-Targets are submitted. <strong>C-Targets</strong> â€” Low fit right now. Keep them on a monitoring list but do not waste time applying this cycle. Check back when their priorities shift or when your program expands.</p>
+
+<h2>Step 2: AI Target Prioritization</h2>
+                    <p>When you accumulate 20 grants in your pipeline, you must determine which ones to attack first. You will leverage AI to rank your opportunities based on ROI.</p>
+                    
+                    <div class="prompt-container">
+                        <div class="prompt-header">
+                            <span class="prompt-label">MODULE 6 PROMPT — AI Target Prioritization</span>
+                            <button class="btn-copy" onclick="copyToClipboard(this, `I am providing a list of grant opportunities we are evaluating. I need you to rank them from Highest Priority to Lowest Priority.\n\nBase your ranking on these ROI factors:\n1. Total funding amount available.\n2. Proximity of the deadline (closer deadlines require immediate action).\n3. Complexity of the application (a 2-page LOI is higher priority than a 50-page federal application).\n4. Alignment with our core mission (which I will supply below).\n\nHere is our core mission: [INSERT MISSION]\nHere are the grant opportunities: [PASTE LIST]`)">
+                                <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use>        <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></symbol>
+        <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></symbol>
+    </svg> Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="prompt-body">I am providing a list of grant opportunities we are evaluating. I need you to rank them from Highest Priority to Lowest Priority.
+
+Base your ranking on these ROI factors:
+1. Total funding amount available.
+2. Proximity of the deadline (closer deadlines require immediate action).
+3. Complexity of the application (a 2-page LOI is higher priority than a 50-page federal application).
+4. Alignment with our core mission (which I will supply below).
+
+Here is our core mission: [INSERT MISSION]
+Here are the grant opportunities: [PASTE LIST]</div>
+                    </div>
+
+                    <h2>Step 3: The 90-Day Sprint Calendar</h2>
+                    <p>Organize your pipeline into 90-day sprints. Month 1: Sourcing and LOIs. Month 2: Drafting. Month 3: Submission and Cultivation.</p>
+
+                    <hr>
+                    <p><strong>Conclusion:</strong> You now possess the comprehensive AI Grant Vault system. You know how to evaluate your readiness, source hidden funding, inject context into AI, draft the pillars, align the budget, reverse-engineer winners, and build a pipeline. Stop guessing. Start executing. The funding is out there waiting for you.</p>
+                </div>
+                <div class="module-footer">
+                    <div class="nav-arrows">
+                        <button class="btn btn-outline" onclick="goTo('view-module-5') ">&larr; Previous Module</button>
+                        <button class="btn btn-outline" disabled>Next Module &rarr;</button>
+                    </div>
+                    <div style="text-align: right;">
+                        <button class="btn btn-primary" onclick="markComplete(6)">Mark as Complete</button>
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <!-- DOWNLOADS VIEW -->
+            <div id="view-downloads" class="view hide-view">
+                <h2 class="gold-accent" style="margin-bottom: 16px; font-size: 2.5rem;">My Downloads</h2>
+                <div class="glass-card" style="margin-bottom: 32px; border-color: rgba(212,175,55,0.3);">
+                    <p style="margin:0;">All resources are yours to keep forever. Download links will be active within 24 hours of your purchase. If you experience any issues reply to your purchase confirmation email.</p>
+                </div>
+                
+                <div class="module-grid">
+                    <div class="glass-card">
+                        <svg class="gold-accent" style="width:24px; height:24px; margin-bottom:16px;"><use href="#icon-key"></use></svg>
+                        <h3 style="margin-bottom:12px;">The Master AI Prompt Library</h3>
+                        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:24px;">Every official prompt required to execute the vault framework.</p>
+                        <a href="#" class="btn btn-outline btn-block">Download</a>
+                    </div>
+                    <div class="glass-card">
+                        <svg class="gold-accent" style="width:24px; height:24px; margin-bottom:16px;"><use href="#icon-key"></use></svg>
+                        <h3 style="margin-bottom:12px;">The AI Output Editing Checklist</h3>
+                        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:24px;">Your systematic guide for humanizing AI generated grant drafts.</p>
+                        <a href="#" class="btn btn-outline btn-block">Download</a>
+                    </div>
+                    <div class="glass-card">
+                        <svg class="gold-accent" style="width:24px; height:24px; margin-bottom:16px;"><use href="#icon-key"></use></svg>
+                        <h3 style="margin-bottom:12px;">The Grant Pipeline Tracker</h3>
+                        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:24px;">Manage your predictable 12-month grant revenue stream.</p>
+                        <a href="#" class="btn btn-outline btn-block">Download</a>
+                    </div>
+                    <div class="glass-card">
+                        <svg class="gold-accent" style="width:24px; height:24px; margin-bottom:16px;"><use href="#icon-key"></use></svg>
+                        <h3 style="margin-bottom:12px;">The Grant Readiness Checklist Lead Magnet</h3>
+                        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:24px;">Evaluate structural compliance for new organizations.</p>
+                        <a href="#" class="btn btn-outline btn-block">Download</a>
+                    </div>
+                    <div class="glass-card">
+                        <svg class="gold-accent" style="width:24px; height:24px; margin-bottom:16px;"><use href="#icon-key"></use></svg>
+                        <h3 style="margin-bottom:12px;">The Module 5 Pattern Extraction Prompt</h3>
+                        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:24px;">Specialized prompt for reverse engineering awarded grants.</p>
+                        <a href="#" class="btn btn-outline btn-block">Download</a>
+                    </div>
+                    <div class="glass-card">
+                        <svg class="gold-accent" style="width:24px; height:24px; margin-bottom:16px;"><use href="#icon-key"></use></svg>
+                        <h3 style="margin-bottom:12px;">The Module 6 Target Prioritization Prompt</h3>
+                        <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:24px;">Score and rank opportunities from your scavenger hunt.</p>
+                        <a href="#" class="btn btn-outline btn-block">Download</a>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const QA_PASS = "VaultQA2026";
+
+        const modulesInfo = [
+            { id: 0, title: "Grant Readiness Assessment", desc: "Evaluate your structural compliance before you apply." },
+            { id: 1, title: "The AI Scavenger Hunt", desc: "Source hidden hyper-local grant opportunities." },
+            { id: 2, title: "The Pre-Write Matrix", desc: "Train the AI on your exact organizational DNA." },
+            { id: 3, title: "Drafting the Proposal", desc: "Generate the four core pillars of a winning narrative." },
+            { id: 4, title: "Budgeting and Final Polish", desc: "Align financials and score against the rubric." },
+            { id: 5, title: "Awarded Grant Reverse Engineering", desc: "Analyze real winners and extract their patterns." },
+            { id: 6, title: "Building a Grant Pipeline", desc: "Manage a predictable 12-month revenue stream." }
+        ];
+
+        let completedModules = [0]; 
+        let assessmentState = {}; 
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            renderDashboardGrid();
+            initAssessment();
+            setupInteractions();
+            setupIntersectionObserver();
+        });
+
+        function setupInteractions() {
+            // Setup dual click/touch for navigation actions
+            const attachAction = (el, callback) => {
+                if(!el) return;
+                el.addEventListener('click', callback);
+                el.addEventListener('touchend', (e) => { e.preventDefault(); callback(e); }, {passive: false});
+            };
+
+            attachAction(document.getElementById('mobile-menu-toggle'), toggleMobileMenu);
+
+            document.querySelectorAll('.nav-action').forEach(btn => {
+                attachAction(btn, () => {
+                    if(window.innerWidth <= 900) toggleMobileMenu();
+                    goTo(btn.getAttribute('data-target'));
+                });
+            });
+
+            const logoutBtn = document.getElementById('logout-btn');
+            attachAction(logoutBtn, handleLogout);
+
+            const loginBtn = document.getElementById('login-btn');
+            attachAction(loginBtn, handleLogin);
+
+            const passInput = document.getElementById('login-password');
+            if(passInput) {
+                passInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') handleLogin();
+                });
+            }
+
+            const toggleIcon = document.getElementById('toggle-password');
+            attachAction(toggleIcon, togglePasswordVisibility);
+
+                        // Setup Expandables
+            document.querySelectorAll('.expandable-toggle').forEach(btn => {
+                const content = btn.nextElementSibling;
+                const arrow = btn.querySelector('.expandable-arrow');
+                const toggleAction = (e) => {
+                    e.preventDefault();
+                    if(content.style.display === 'none') {
+                        content.style.display = 'block';
+                        if(arrow) arrow.style.transform = 'rotate(180deg)';
+                    } else {
+                        content.style.display = 'none';
+                        if(arrow) arrow.style.transform = 'rotate(0deg)';
+                    }
+                };
+                btn.addEventListener('click', toggleAction);
+                btn.addEventListener('touchend', toggleAction, {passive: false});
+            });
+            });
+
+            // Make sure embedded onClick actions (like Next Module) still work if they are hardcoded
+            // We'll trust the hardcoded ones, but ideally they'd be attached dynamically.
+            // Actually, the user asked to replace them all in previous steps. Our extraction preserved them.
+        }
+
+        function checkAuth() {
+            const isAuthLocal = localStorage.getItem('vaultAuth') === 'true';
+            const isAuthSession = sessionStorage.getItem('vaultAuth') === 'true';
+            if(isAuthLocal || isAuthSession) {
+                const savedModules = localStorage.getItem('completedModules');
+                if(savedModules) {
+                    completedModules = JSON.parse(savedModules);
+                }
+                setTimeout(() => goTo('view-dashboard'), 0);
+            } else {
+                setTimeout(() => goTo('view-login'), 0);
+            }
+        }
+
+        function handleLogin() {
+            const pass = document.getElementById('login-password').value;
+            const err = document.getElementById('login-error');
+            const remember = document.getElementById('login-remember').checked;
+
+            if (pass === QA_PASS) {
+                err.style.display = 'none';
+                if (remember) {
+                    localStorage.setItem('vaultAuth', 'true');
+                } else {
+                    sessionStorage.setItem('vaultAuth', 'true');
+                }
+                setTimeout(() => goTo('view-dashboard'), 0);
+            } else {
+                err.style.display = 'block';
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('vaultAuth');
+            sessionStorage.removeItem('vaultAuth');
+            document.getElementById('login-password').value = '';
+            setTimeout(() => goTo('view-login'), 0);
+        }
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('login-password');
+            const toggleIcon = document.getElementById('toggle-password');
+            if (passInput && toggleIcon) {
+                if (passInput.type === 'password') {
+                    passInput.type = 'text';
+                    toggleIcon.innerHTML = '<use href="#icon-eye"></use>';
+                } else {
+                    passInput.type = 'password';
+                    toggleIcon.innerHTML = '<use href="#icon-eye-off"></use>';
+                }
+            }
+        }
+
+        // The exact, simple goTo function requested
+                function scrollToTopAggressive() {
+            window.scrollTo(0, 0);
+            window.scroll({behavior: 'smooth', left: 0, top: 0});
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+                window.scroll({behavior: 'smooth', left: 0, top: 0});
+                document.body.scrollTop = 0;
+                document.documentElement.scrollTop = 0;
+            }, 50);
+        }
+
+        function goTo(viewId) {
+            const allViews = ['view-login', 'view-dashboard', 'view-downloads', 'view-module-0', 'view-module-1', 'view-module-2', 'view-module-3', 'view-module-4', 'view-module-5', 'view-module-6'];
+            
+            for (let i = 0; i < allViews.length; i++) {
+                const el = document.getElementById(allViews[i]);
+                if (el) {
+                    el.className = 'view hide-view';
+                }
+            }
+
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.className = 'view ' + (viewId === 'view-login' ? 'show-view-flex' : 'show-view-block');
+            }
+            
+            window.scrollTo(0,0);
+            
+            // Visual hash update purely for tracking
+            if(viewId !== 'view-login') {
+                window.location.hash = viewId;
+                scrollToTopAggressive();
+            } else {
+                window.location.hash = '';
+            }
+
+            // Manage Sidebar UI
+            const sidebar = document.getElementById('sidebar');
+            const mobileHeader = document.getElementById('mobile-header');
+            if (viewId === 'view-login') {
+                if(sidebar) sidebar.style.display = 'none';
+                if(mobileHeader) mobileHeader.style.display = 'none';
+            } else {
+                if(sidebar) sidebar.style.display = 'flex';
+                if(mobileHeader) mobileHeader.style.display = window.innerWidth <= 900 ? 'flex' : 'none';
+            }
+
+            // Update Nav Active States
+            document.querySelectorAll('.nav-action').forEach(l => l.classList.remove('active'));
+            if (viewId.startsWith('view-module') || viewId === 'view-dashboard') {
+                const link = document.querySelector('[data-target="view-dashboard"]');
+                if(link) link.classList.add('active');
+            } else if (viewId === 'view-downloads') {
+                const link = document.querySelector('[data-target="view-downloads"]');
+                if(link) link.classList.add('active');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            if(sidebar) sidebar.classList.toggle('open');
+        }
+
+        function markComplete(moduleId) {
+            if (!completedModules.includes(moduleId)) {
+                completedModules.push(moduleId);
+                localStorage.setItem('completedModules', JSON.stringify(completedModules));
+            }
+            renderDashboardGrid();
+            
+            // Show brief success msg
+            const btn = document.querySelector('#view-module-' + moduleId + ' .btn-primary:last-of-type');
+            if(btn) {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<svg style="width:20px; height:20px; margin-right:8px;"><use href="#icon-check"></use></svg> Success!';
+                btn.style.backgroundColor = 'var(--success-color)';
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    btn.style.backgroundColor = '';
+                    if (moduleId < 6) {
+                        goTo('view-module-' + (moduleId + 1));
+                    } else {
+                        goTo('view-dashboard');
+                    }
+                }, 1000);
+            } else {
+                if (moduleId < 6) {
+                    goTo('view-module-' + (moduleId + 1));
+                } else {
+                    goTo('view-dashboard');
+                }
+            }
+        }
+
+        function renderDashboardGrid() {
+            const grid = document.getElementById('dashboard-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+
+            let maxComplete = -1;
+            completedModules.forEach(v => { if(v > maxComplete) maxComplete = v; });
+            let currentActiveIndex = maxComplete + 1;
+            if(currentActiveIndex > 6) currentActiveIndex = 6;
+
+            // Generate Module Cards
+            modulesInfo.forEach((mod, index) => {
+                const isComplete = completedModules.includes(index);
+                const isActive = index === currentActiveIndex && !isComplete;
+                const isLocked = !isComplete && !isActive;
+
+                let statusHtml = '';
+                let btnHtml = '';
+
+                if (isComplete) {
+                    statusHtml = '<span class="status-badge status-complete">Complete</span>';
+                    btnHtml = '<button class="btn btn-outline btn-block" onclick="goTo(\'view-module-' + index + '\')">Review Module</button>';
+                } else if (isActive) {
+                    statusHtml = '<span class="status-badge status-active">In Progress</span>';
+                    btnHtml = '<button class="btn btn-primary btn-block" onclick="goTo(\'view-module-' + index + '\')">Continue Module</button>';
+                } else {
+                    statusHtml = '<span class="status-badge status-locked"><svg style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:4px;"><use href="#icon-lock"></use></svg> Locked</span>';
+                    btnHtml = '<button class="btn btn-outline btn-block" disabled>Start Module</button>';
+                }
+
+                let opacityStyle = isLocked ? 'opacity: 0.6;' : '';
+                grid.innerHTML += '<div class="glass-card" style="display:flex; flex-direction:column; ' + opacityStyle + '"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 16px;"><div style="font-size: 0.85rem; font-weight: 600; color: var(--primary-color);">Module 0' + index + '</div>' + statusHtml + '</div><h3 style="font-size: 1.5rem; margin-bottom: 12px;">' + mod.title + '</h3><p style="font-size: 0.95rem; flex-grow: 1; margin-bottom: 24px; color: var(--text-secondary);">' + mod.desc + '</p>' + btnHtml + '</div>';
+            });
+
+            // Generate Progress Tracker
+            const trackerContainer = document.getElementById('progress-tracker-container');
+            if(trackerContainer) {
+                trackerContainer.innerHTML = '';
+                for(let i=0; i<=6; i++) {
+                    let stepClass = 'progress-step';
+                    let stepContent = i;
+                    
+                    if (completedModules.includes(i)) {
+                        stepClass += ' completed';
+                        stepContent = ''; // It will be filled by SVG below
+                    } else if (i === currentActiveIndex) {
+                        stepClass += ' active';
+                    }
+                    
+                    trackerContainer.innerHTML += '<div class="' + stepClass + '">' + (stepContent === '' ? '<svg style="width:20px; height:20px;"><use href="#icon-check"></use></svg>' : stepContent) + '</div>';
+                }
+            }
+        }
+
+        // Assessment Logic
+        const gapActions = {
+            1: "Register your official legal entity with the state.",
+            2: "Apply for a free EIN on the IRS website.",
+            3: "Recruit and formalize your Board of Directors or Advisory Board.",
+            4: "Draft and adopt organizational bylaws or operating agreements.",
+            5: "Write a one-page summary detailing your specific program activities.",
+            6: "Define the specific demographics, age range, and location of who you serve.",
+            7: "Create a timeline showing exactly when and how program activities occur.",
+            8: "Build a simple Logic Model showing Inputs, Activities, and Outcomes.",
+            9: "Start a spreadsheet to track program attendance and participation.",
+            10: "Create a pre- and post-program survey to measure participant progress.",
+            11: "Document at least two detailed success stories or case studies.",
+            12: "Run one complete cycle of your program so you have real data to show.",
+            13: "Create a simple organizational budget and have the board vote to approve it.",
+            14: "Build a separate, detailed budget specifically for the work you want funded.",
+            15: "Organize your bank statements or create a clean P&L for the past 12 months.",
+            16: "Schedule a financial review or audit if your revenue requires one.",
+            17: "Assign one specific team member or volunteer to manage grant compliance.",
+            18: "Set up a calendar system to track funder reporting deadlines.",
+            19: "Update your accounting system to track restricted grant dollars separately."
+        };
+
+        function initAssessment() {
+            const questions = document.querySelectorAll('.assessment-q');
+            questions.forEach(q => {
+                const qid = q.getAttribute('data-qid');
+                const btnYes = q.querySelector('.btn-yes');
+                const btnNo = q.querySelector('.btn-no');
+
+                if(btnYes && btnNo) {
+                    const attachAssess = (el, val) => {
+                        el.addEventListener('click', () => handleAnswer(qid, val, q, btnYes, btnNo));
+                        el.addEventListener('touchend', (e) => { e.preventDefault(); handleAnswer(qid, val, q, btnYes, btnNo); }, {passive: false});
+                    };
+                    attachAssess(btnYes, 'yes');
+                    attachAssess(btnNo, 'no');
+                }
+            });
+        }
+
+        function handleAnswer(qid, answer, qNode, btnYes, btnNo) {
+            if (assessmentState[qid] === answer) {
+                delete assessmentState[qid];
+                btnYes.classList.remove('active');
+                btnNo.classList.remove('active');
+            } else {
+                assessmentState[qid] = answer;
+                btnYes.classList.remove('active');
+                btnNo.classList.remove('active');
+                if (answer === 'yes') btnYes.classList.add('active');
+                else btnNo.classList.add('active');
+            }
+            updateScore();
+        }
+
+        function updateScore() {
+            const keys = Object.keys(assessmentState);
+            let yesCount = 0;
+            keys.forEach(k => { if (assessmentState[k] === 'yes') yesCount++; });
+
+            const liveScoreEl = document.getElementById('live-score');
+            if(liveScoreEl) liveScoreEl.innerText = 'Your Readiness Score: ' + yesCount + ' out of 19';
+            
+            const resultsDiv = document.getElementById('assessment-results');
+            if(!resultsDiv) return;
+            
+            if (keys.length === 19) {
+                resultsDiv.style.display = 'block';
+                let noListHtml = '';
+                for(let i=1; i<=19; i++) {
+                    if (assessmentState[i] === 'no') {
+                        noListHtml += '<li style="margin-bottom: 8px;"><strong>Question ' + i + ':</strong> ' + gapActions[i] + '</li>';
+                    }
+                }
+
+                if (yesCount >= 16) {
+                    resultsDiv.innerHTML = '<div class="glass-card" style="border-color: var(--success-color);"><h3 style="color: var(--success-color); margin-bottom: 16px;">Category 1: Ready to Apply Now</h3><p>You have the vast majority of the required infrastructure in place. You have the legal standing, financial transparency, and outcome data that funders expect to see.</p><p><strong>Your Next Action:</strong> You are cleared to proceed immediately. Move directly to Module 1 and begin the AI Scavenger Hunt to find your first targets.</p></div>';
+                } else if (yesCount >= 10 && yesCount <= 15) {
+                    resultsDiv.innerHTML = '<div class="glass-card" style="border-color: var(--primary-color);"><h3 class="gold-accent" style="margin-bottom: 16px;">Category 2: Nearly Ready</h3><p>You have a strong foundation, but you have specific structural gaps that will likely trigger a rejection from a sophisticated funder. You need to pause drafting and focus on compliance.</p><div style="margin: 24px 0; padding: 24px; background: rgba(0,0,0,0.3); border-radius: 8px;"><h4 style="color: #fff; margin-bottom: 16px;">Your 30 to 60 Day Gap Closing Plan</h4><ul style="margin-left: 20px;">' + noListHtml + '</ul></div><p><strong>Complete these steps and retake the assessment.</strong> You will be ready to apply within 60 days. In the meantime continue through the remaining modules so you are fully prepared to move fast when your gaps are closed.</p></div>';
+                } else {
+                    resultsDiv.innerHTML = '<div class="glass-card" style="border-color: var(--primary-color);"><h3 class="gold-accent" style="margin-bottom: 16px;">Category 3: Foundation Building Needed</h3><p>You are in the early stages of organizational development. Applying for grants right now will be a frustrating waste of your time because you cannot pass the baseline compliance checks reviewers use to screen applicants.</p><div style="margin: 24px 0; padding: 24px; background: rgba(0,0,0,0.3); border-radius: 8px;"><h4 style="color: #fff; margin-bottom: 16px;">Your Foundation Building Roadmap</h4><p>You are in the right place. Most organizations that secure consistent grant funding spent time in exactly this phase before their first win. The AI Grant Vault includes everything you need to build your foundation while learning the system simultaneously. Here is your recommended path: Spend the next 30 days completing Modules 1 and 2 to learn how to find and qualify grants and build your organizational context. Use that time to close the legal and financial gaps identified above. Return to this assessment in 60 days. You will be structurally ready â€” and you will already know the system inside and out.</p><h4 style="color: #fff; margin-top: 24px; margin-bottom: 16px;">Specific Gaps to Close:</h4><ul style="margin-left: 20px;">' + noListHtml + '</ul></div></div>';
+                }
+            } else {
+                resultsDiv.style.display = 'none';
+            }
+        }
+
+        // Global Copy to Clipboard function with fallback
+        function copyToClipboard(button, textToCopy) {
+            function showCopied() {
+                const originalHtml = button.innerHTML;
+                button.innerHTML = '<svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-check"></use></svg> Copied';
+                button.style.color = 'var(--success-color)';
+                setTimeout(() => {
+                    button.innerHTML = originalHtml;
+                    button.style.color = '';
+                }, 2000);
+            }
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy).then(showCopied).catch(err => {
+                    fallbackCopyTextToClipboard(textToCopy, showCopied);
+                });
+            } else {
+                fallbackCopyTextToClipboard(textToCopy, showCopied);
+            }
+        }
+        
+        function fallbackCopyTextToClipboard(text, successCallback) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if(successful && successCallback) successCallback();
+            } catch (err) {}
+            document.body.removeChild(textArea);
+        }
+
+        // Intersection Observer for scroll fade in
+        function setupIntersectionObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.module-section').forEach(section => {
+                section.classList.add('fade-in-section');
+                observer.observe(section);
+            });
+        }
+    </script>
+</body>
+</html>
