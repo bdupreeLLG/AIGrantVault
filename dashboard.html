@@ -533,8 +533,83 @@
                     <!-- Steps injected via JS -->
                 </div>
 
-                <div class="module-grid" id="dashboard-grid">
-                    <!-- Cards injected via JS -->
+                                <div class="module-grid" id="dashboard-grid">
+                    <!-- Card 1 -->
+                    <div class="glass-card" style="display:flex; flex-direction:column;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 16px;">
+                            <div style="font-size: 0.85rem; font-weight: 600; color: var(--primary-color);">Module 00</div>
+                            <span class="status-badge status-complete">Complete</span>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 12px;">Grant Readiness Assessment</h3>
+                        <p style="font-size: 0.95rem; flex-grow: 1; margin-bottom: 24px; color: var(--text-secondary);">Before you search for a single grant you need to know if your organization is actually ready to compete</p>
+                        <button class="btn btn-outline btn-block" onclick="goTo('view-module-0')">Review Module</button>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="glass-card" style="display:flex; flex-direction:column;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 16px;">
+                            <div style="font-size: 0.85rem; font-weight: 600; color: var(--primary-color);">Module 01</div>
+                            <span class="status-badge status-active">In Progress</span>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 12px;">The AI Scavenger Hunt</h3>
+                        <p style="font-size: 0.95rem; flex-grow: 1; margin-bottom: 24px; color: var(--text-secondary);">Use AI to surface hyper-local grants your competitors have never heard of</p>
+                        <button class="btn btn-primary btn-block" onclick="goTo('view-module-1')">Continue Module</button>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="glass-card" style="display:flex; flex-direction:column; opacity: 0.6;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 16px;">
+                            <div style="font-size: 0.85rem; font-weight: 600; color: var(--primary-color);">Module 02</div>
+                            <span class="status-badge status-locked"><svg style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:4px;"><use href="#icon-lock"></use></svg> Locked</span>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 12px;">The Pre-Write Matrix</h3>
+                        <p style="font-size: 0.95rem; flex-grow: 1; margin-bottom: 24px; color: var(--text-secondary);">Build the context document that trains the AI on your organization before it writes a single word</p>
+                        <button class="btn btn-outline btn-block" onclick="goTo('view-module-2')" disabled>Start Module</button>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="glass-card" style="display:flex; flex-direction:column; opacity: 0.6;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 16px;">
+                            <div style="font-size: 0.85rem; font-weight: 600; color: var(--primary-color);">Module 03</div>
+                            <span class="status-badge status-locked"><svg style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:4px;"><use href="#icon-lock"></use></svg> Locked</span>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 12px;">Drafting the Proposal</h3>
+                        <p style="font-size: 0.95rem; flex-grow: 1; margin-bottom: 24px; color: var(--text-secondary);">Generate every major section of a competitive grant proposal using precision prompts</p>
+                        <button class="btn btn-outline btn-block" onclick="goTo('view-module-3')" disabled>Start Module</button>
+                    </div>
+
+                    <!-- Card 5 -->
+                    <div class="glass-card" style="display:flex; flex-direction:column; opacity: 0.6;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 16px;">
+                            <div style="font-size: 0.85rem; font-weight: 600; color: var(--primary-color);">Module 04</div>
+                            <span class="status-badge status-locked"><svg style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:4px;"><use href="#icon-lock"></use></svg> Locked</span>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 12px;">Budgeting and Final Polish</h3>
+                        <p style="font-size: 0.95rem; flex-grow: 1; margin-bottom: 24px; color: var(--text-secondary);">Align your budget with your narrative and self-score against the funder rubric before submitting</p>
+                        <button class="btn btn-outline btn-block" onclick="goTo('view-module-4')" disabled>Start Module</button>
+                    </div>
+
+                    <!-- Card 6 -->
+                    <div class="glass-card" style="display:flex; flex-direction:column; opacity: 0.6;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 16px;">
+                            <div style="font-size: 0.85rem; font-weight: 600; color: var(--primary-color);">Module 05</div>
+                            <span class="status-badge status-locked"><svg style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:4px;"><use href="#icon-lock"></use></svg> Locked</span>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 12px;">Awarded Grant Reverse Engineering</h3>
+                        <p style="font-size: 0.95rem; flex-grow: 1; margin-bottom: 24px; color: var(--text-secondary);">Find and analyze winning proposals to extract the language patterns and funder priorities that produce funded applications</p>
+                        <button class="btn btn-outline btn-block" onclick="goTo('view-module-5')" disabled>Start Module</button>
+                    </div>
+
+                    <!-- Card 7 -->
+                    <div class="glass-card" style="display:flex; flex-direction:column; opacity: 0.6;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 16px;">
+                            <div style="font-size: 0.85rem; font-weight: 600; color: var(--primary-color);">Module 06</div>
+                            <span class="status-badge status-locked"><svg style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:4px;"><use href="#icon-lock"></use></svg> Locked</span>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 12px;">Building a Grant Pipeline</h3>
+                        <p style="font-size: 0.95rem; flex-grow: 1; margin-bottom: 24px; color: var(--text-secondary);">Manage 15 to 25 grant targets simultaneously with priority rankings, a 90-day calendar, and a follow-up system</p>
+                        <button class="btn btn-outline btn-block" onclick="goTo('view-module-6')" disabled>Start Module</button>
+                    </div>
                 </div>
             </div>
 
@@ -1382,62 +1457,11 @@ Here are the grant opportunities: [PASTE LIST]</div>
             }
         }
 
-        function renderDashboardGrid() {
-            const grid = document.getElementById('dashboard-grid');
-            if(!grid) return;
-            grid.innerHTML = '';
-
+                function renderDashboardGrid() {
             let maxComplete = -1;
             completedModules.forEach(v => { if(v > maxComplete) maxComplete = v; });
             let currentActiveIndex = maxComplete + 1;
             if(currentActiveIndex > 6) currentActiveIndex = 6;
-
-            // Generate Module Cards
-            modulesInfo.forEach((mod, index) => {
-                const isComplete = completedModules.includes(index);
-                const isActive = index === currentActiveIndex && !isComplete;
-                const isLocked = !isComplete && !isActive;
-
-                let statusHtml = '';
-                let btn = document.createElement('button');
-
-                if (isComplete) {
-                    statusHtml = '<span class="status-badge status-complete">Complete</span>';
-                    btn.className = 'btn btn-outline btn-block';
-                    btn.textContent = 'Review Module';
-                    btn.addEventListener('click', () => goTo('view-module-' + index));
-                    btn.addEventListener('touchend', (e) => { e.preventDefault(); goTo('view-module-' + index); }, {passive: false});
-                } else if (isActive) {
-                    statusHtml = '<span class="status-badge status-active">In Progress</span>';
-                    btn.className = 'btn btn-primary btn-block';
-                    btn.textContent = 'Continue Module';
-                    btn.addEventListener('click', () => goTo('view-module-' + index));
-                    btn.addEventListener('touchend', (e) => { e.preventDefault(); goTo('view-module-' + index); }, {passive: false});
-                } else {
-                    statusHtml = '<span class="status-badge status-locked"><svg style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:4px;"><use href="#icon-lock"></use></svg> Locked</span>';
-                    btn.className = 'btn btn-outline btn-block';
-                    btn.textContent = 'Start Module';
-                    btn.disabled = true;
-                }
-
-                let card = document.createElement('div');
-                card.className = 'glass-card';
-                card.style.display = 'flex';
-                card.style.flexDirection = 'column';
-                if (isLocked) {
-                    card.style.opacity = '0.6';
-                }
-                
-                let innerHtmlStr = '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 16px;">';
-                innerHtmlStr += '<div style="font-size: 0.85rem; font-weight: 600; color: var(--primary-color);">Module 0' + index + '</div>';
-                innerHtmlStr += statusHtml + '</div>';
-                innerHtmlStr += '<h3 style="font-size: 1.5rem; margin-bottom: 12px;">' + mod.title + '</h3>';
-                innerHtmlStr += '<p style="font-size: 0.95rem; flex-grow: 1; margin-bottom: 24px; color: var(--text-secondary);">' + mod.desc + '</p>';
-                
-                card.innerHTML = innerHtmlStr;
-                card.appendChild(btn);
-                grid.appendChild(card);
-            });
 
             // Generate Progress Tracker
             const trackerContainer = document.getElementById('progress-tracker-container');
@@ -1536,11 +1560,11 @@ Here are the grant opportunities: [PASTE LIST]</div>
                 }
 
                 if (yesCount >= 16) {
-                    resultsDiv.innerHTML = '<div class="glass-card" style="border-color: var(--success-color);"><h3 style="color: var(--success-color); margin-bottom: 16px;">Category 1: Ready to Apply Now</h3><p>You have the vast majority of the required infrastructure in place. You have the legal standing, financial transparency, and outcome data that funders expect to see.</p><p><strong>Your Next Action:</strong> You are cleared to proceed immediately. Move directly to Module 1 and begin the AI Scavenger Hunt to find your first targets.</p></div>';
+                    resultsDiv.innerHTML = "<div class=\"glass-card\" style=\"border-color: var(--success-color);\"><h3 style=\"color: var(--success-color); margin-bottom: 16px;\">Category 1: Ready to Apply Now</h3><p>You have the vast majority of the required infrastructure in place. You have the legal standing, financial transparency, and outcome data that funders expect to see.</p><p><strong>Your Next Action:</strong> You are cleared to proceed immediately. Move directly to Module 1 and begin the AI Scavenger Hunt to find your first targets.</p></div>";
                 } else if (yesCount >= 10 && yesCount <= 15) {
-                    resultsDiv.innerHTML = '<div class="glass-card" style="border-color: var(--primary-color);"><h3 class="gold-accent" style="margin-bottom: 16px;">Category 2: Nearly Ready</h3><p>You have a strong foundation, but you have specific structural gaps that will likely trigger a rejection from a sophisticated funder. You need to pause drafting and focus on compliance.</p><div style="margin: 24px 0; padding: 24px; background: rgba(0,0,0,0.3); border-radius: 8px;"><h4 style="color: #fff; margin-bottom: 16px;">Your 30 to 60 Day Gap Closing Plan</h4><ul style="margin-left: 20px;">' + noListHtml + '</ul></div><p><strong>Complete these steps and retake the assessment.</strong> You will be ready to apply within 60 days. In the meantime continue through the remaining modules so you are fully prepared to move fast when your gaps are closed.</p></div>';
+                    resultsDiv.innerHTML = "<div class=\"glass-card\" style=\"border-color: var(--primary-color);\"><h3 class=\"gold-accent\" style=\"margin-bottom: 16px;\">Category 2: Nearly Ready</h3><p>You have a strong foundation, but you have specific structural gaps that will likely trigger a rejection from a sophisticated funder. You need to pause drafting and focus on compliance.</p><div style=\"margin: 24px 0; padding: 24px; background: rgba(0,0,0,0.3); border-radius: 8px;\"><h4 style=\"color: #fff; margin-bottom: 16px;\">Your 30 to 60 Day Gap Closing Plan</h4><ul style=\"margin-left: 20px;\">" + noListHtml + "</ul></div><p><strong>Complete these steps and retake the assessment.</strong> You will be ready to apply within 60 days. In the meantime continue through the remaining modules so you are fully prepared to move fast when your gaps are closed.</p></div>";
                 } else {
-                    resultsDiv.innerHTML = '<div class="glass-card" style="border-color: var(--primary-color);"><h3 class="gold-accent" style="margin-bottom: 16px;">Category 3: Foundation Building Needed</h3><p>You are in the early stages of organizational development. Applying for grants right now will be a frustrating waste of your time because you cannot pass the baseline compliance checks reviewers use to screen applicants.</p><div style="margin: 24px 0; padding: 24px; background: rgba(0,0,0,0.3); border-radius: 8px;"><h4 style="color: #fff; margin-bottom: 16px;">Your Foundation Building Roadmap</h4><p>You are in the right place. Most organizations that secure consistent grant funding spent time in exactly this phase before their first win. The AI Grant Vault includes everything you need to build your foundation while learning the system simultaneously. Here is your recommended path: Spend the next 30 days completing Modules 1 and 2 to learn how to find and qualify grants and build your organizational context. Use that time to close the legal and financial gaps identified above. Return to this assessment in 60 days. You will be structurally ready â€” and you will already know the system inside and out.</p><h4 style="color: #fff; margin-top: 24px; margin-bottom: 16px;">Specific Gaps to Close:</h4><ul style="margin-left: 20px;">' + noListHtml + '</ul></div></div>';
+                    resultsDiv.innerHTML = "<div class=\"glass-card\" style=\"border-color: var(--primary-color);\"><h3 class=\"gold-accent\" style=\"margin-bottom: 16px;\">Category 3: Foundation Building Needed</h3><p>You are in the early stages of organizational development. Applying for grants right now will be a frustrating waste of your time because you cannot pass the baseline compliance checks reviewers use to screen applicants.</p><div style=\"margin: 24px 0; padding: 24px; background: rgba(0,0,0,0.3); border-radius: 8px;\"><h4 style=\"color: #fff; margin-bottom: 16px;\">Your Foundation Building Roadmap</h4><p>You are in the right place. Most organizations that secure consistent grant funding spent time in exactly this phase before their first win. The AI Grant Vault includes everything you need to build your foundation while learning the system simultaneously. Here is your recommended path: Spend the next 30 days completing Modules 1 and 2 to learn how to find and qualify grants and build your organizational context. Use that time to close the legal and financial gaps identified above. Return to this assessment in 60 days. You will be structurally ready — and you will already know the system inside and out.</p><h4 style=\"color: #fff; margin-top: 24px; margin-bottom: 16px;\">Specific Gaps to Close:</h4><ul style=\"margin-left: 20px;\">" + noListHtml + "</ul></div></div>";
                 }
             } else {
                 resultsDiv.style.display = 'none';
