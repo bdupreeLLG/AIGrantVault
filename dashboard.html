@@ -670,7 +670,7 @@
                     </h1>
                     
                     <p style="font-size: 1.2rem; color: var(--text-secondary); max-width: 800px; margin-bottom: 40px; line-height: 1.6; position: relative; z-index: 2;">
-                        Use AI to find hyper-local grants, write rubric-aligned proposals, and submit 10 times more applications in the same time — whether you are brand new to grants or looking to scale what you are already doing.
+                        Use AI to find hyper-local grants, write rubric-aligned proposals, and submit 10 times more applications in the same time — whether you are brand new to grants and AI or just looking to scale what you are already doing.
                     </p>
                     
                     <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 48px; position: relative; z-index: 2;">
@@ -698,10 +698,10 @@
                         <div>
                             <div style="color: var(--primary-color); font-size: 3rem; font-weight: 800; margin-bottom: 12px; line-height: 1;">20x</div>
                             <h3 style="color: #fff; margin-bottom: 12px; font-size: 1.3rem;">More Applications in the Same Time</h3>
-                            <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.6;">When each application takes 4 hours instead of 40 you can build a pipeline of 20 qualified grant targets in the same time most writers spend on one. Volume wins.</p>
+                            <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.6;">When each application takes 4 hours instead of 40 you can build a pipeline of 20 qualified grant targets in the same time most writers spend on one. Speed and volume win.</p>
                         </div>
                     </div>
-                    <p style="text-align: center; color: var(--text-secondary); font-size: 1.1rem; font-style: italic;">This is not about working harder. It is about building a system that makes grant funding a repeatable business function rather than a painful one-time event.</p>
+                    <p style="text-align: center; color: var(--text-secondary); font-size: 1.1rem; font-style: italic;">This is not about working harder or cutting corners. It is about building a system that makes grant funding a scalable and repeatable business function rather than a painful one-time event.</p>
                 </div>
 
                 <!-- PROBLEM SECTION -->
@@ -737,7 +737,7 @@
                         <div class="glass-card">
                             <svg class="gold-accent" style="width:32px; height:32px; margin-bottom:16px;"><use href="#icon-key"></use></svg>
                             <h3 style="margin-bottom:12px;">Hyper-Local Sourcing</h3>
-                            <p style="font-size:0.95rem; color:var(--text-secondary);">Stop competing for the same national grants. This system teaches you to find local funding opportunities your competitors have never discovered because they are not in any database.</p>
+                            <p style="font-size:0.95rem; color:var(--text-secondary);">Stop competing for the same national grants. This system teaches you to find hyper-local funding opportunities — community foundations, corporate giving programs, and family foundations — that most organizations have never discovered.</p>
                         </div>
                         <div class="glass-card">
                             <svg class="gold-accent" style="width:32px; height:32px; margin-bottom:16px;"><use href="#icon-shield"></use></svg>
@@ -747,7 +747,7 @@
                         <div class="glass-card">
                             <svg class="gold-accent" style="width:32px; height:32px; margin-bottom:16px;"><use href="#icon-chart"></use></svg>
                             <h3 style="margin-bottom:12px;">Pipeline Management</h3>
-                            <p style="font-size:0.95rem; color:var(--text-secondary);">Transform grant funding from a one-time lottery into a reliable repeatable revenue stream using the pipeline tracker and 90-day submission calendar system.</p>
+                            <p style="font-size:0.95rem; color:var(--text-secondary);">Transform grant funding from a one-time lottery into a scalable and reliable repeatable revenue stream using the pipeline tracker and 90-day submission calendar system.</p>
                         </div>
                     </div>
                 </div>
@@ -786,13 +786,13 @@
                         </div>
                         <div class="glass-card">
                             <svg class="gold-accent" style="width:24px; height:24px; margin-bottom:16px;"><use href="#icon-key"></use></svg>
-                            <h3 style="margin-bottom:12px;">The Module 5 Pattern Extraction Prompt</h3>
+                            <h3 style="margin-bottom:12px;">The Pattern Extraction Guideline Strategy</h3>
                             <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:24px;">Specialized prompt for reverse engineering awarded grants.</p>
                             <span style="display:block; text-align:center; border: 1px solid var(--primary-color); color: var(--primary-color); padding: 8px; border-radius: 4px;">Included with Membership</span>
                         </div>
                         <div class="glass-card">
                             <svg class="gold-accent" style="width:24px; height:24px; margin-bottom:16px;"><use href="#icon-key"></use></svg>
-                            <h3 style="margin-bottom:12px;">The Module 6 Target Prioritization Prompt</h3>
+                            <h3 style="margin-bottom:12px;">The Target Prioritization Model Guideline Strategy</h3>
                             <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:24px;">Score and rank opportunities from your scavenger hunt.</p>
                             <span style="display:block; text-align:center; border: 1px solid var(--primary-color); color: var(--primary-color); padding: 8px; border-radius: 4px;">Included with Membership</span>
                         </div>
@@ -992,7 +992,7 @@
                             <label style="display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 0.9rem;">Vault Password</label>
                             <div style="position: relative;">
                                 <input type="password" id="login-password" class="form-input" placeholder="Enter your access code" required style="padding-right: 48px;">
-                                <button type="button" onclick="togglePasswordVisibility()" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer;">
+                                <button type="button" id="eye-icon-btn" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer;">
                                     <svg id="eye-icon" style="width: 20px; height: 20px;"><use href="#icon-eye"></use></svg>
                                 </button>
                             </div>
@@ -1000,6 +1000,10 @@
                                 <span style="border: 1px solid var(--primary-color); padding: 4px 12px; border-radius: 20px; color: var(--primary-color); font-size: 0.8rem;">Secure Member Access</span>
                                 <span style="border: 1px solid var(--primary-color); padding: 4px 12px; border-radius: 20px; color: var(--primary-color); font-size: 0.8rem;">Licensed Content — Members Only</span>
                             </div>
+                        </div>
+                        <div style="margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <input type="checkbox" id="remember-me-checkbox">
+                            <label for="remember-me-checkbox" style="color: var(--text-secondary); font-size: 0.875rem;">Remember me on this device</label>
                         </div>
                         <p id="login-error" style="color: var(--error-color); font-size: 0.9rem; margin-bottom: 16px; text-align: center; display: none;">Incorrect password. Please check your purchase email.</p>
                         <button type="submit" class="btn btn-primary btn-block" style="font-size: 1.1rem; margin-bottom: 16px;">Enter the Vault</button>
@@ -1761,13 +1765,13 @@ Here are the grant opportunities: [PASTE LIST]</div>
                     </div>
                     <div class="glass-card">
                         <svg class="gold-accent" style="width:24px; height:24px; margin-bottom:16px;"><use href="#icon-key"></use></svg>
-                        <h3 style="margin-bottom:12px;">The Module 5 Pattern Extraction Prompt</h3>
+                        <h3 style="margin-bottom:12px;">The Pattern Extraction Guideline Strategy</h3>
                         <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:24px;">Specialized prompt for reverse engineering awarded grants.</p>
                         <a href="#" class="btn btn-outline btn-block">Download</a>
                     </div>
                     <div class="glass-card">
                         <svg class="gold-accent" style="width:24px; height:24px; margin-bottom:16px;"><use href="#icon-key"></use></svg>
-                        <h3 style="margin-bottom:12px;">The Module 6 Target Prioritization Prompt</h3>
+                        <h3 style="margin-bottom:12px;">The Target Prioritization Model Guideline Strategy</h3>
                         <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:24px;">Score and rank opportunities from your scavenger hunt.</p>
                         <a href="#" class="btn btn-outline btn-block">Download</a>
                     </div>
@@ -1832,7 +1836,7 @@ Here are the grant opportunities: [PASTE LIST]</div>
                 });
             }
 
-            const toggleIcon = document.getElementById('toggle-password');
+            const toggleIcon = document.getElementById('eye-icon-btn');
             attachAction(toggleIcon, togglePasswordVisibility);
 
             document.querySelectorAll('.accordion-trigger').forEach(btn => {
@@ -1870,7 +1874,7 @@ Here are the grant opportunities: [PASTE LIST]</div>
         function handleLogin() {
             const pass = document.getElementById('login-password').value;
             const err = document.getElementById('login-error');
-            const remember = document.getElementById('login-remember').checked;
+            const remember = document.getElementById('remember-me-checkbox').checked;
 
             if (pass === QA_PASS) {
                 err.style.display = 'none';
@@ -1894,14 +1898,14 @@ Here are the grant opportunities: [PASTE LIST]</div>
 
         function togglePasswordVisibility() {
             const passInput = document.getElementById('login-password');
-            const toggleIcon = document.getElementById('toggle-password');
-            if (passInput && toggleIcon) {
+            const toggleSvg = document.getElementById('eye-icon');
+            if (passInput && toggleSvg) {
                 if (passInput.type === 'password') {
                     passInput.type = 'text';
-                    toggleIcon.innerHTML = '<use href="#icon-eye"></use>';
+                    toggleSvg.innerHTML = '<use href="#icon-eye"></use>';
                 } else {
                     passInput.type = 'password';
-                    toggleIcon.innerHTML = '<use href="#icon-eye-off"></use>';
+                    toggleSvg.innerHTML = '<use href="#icon-eye-off"></use>';
                 }
             }
         }
