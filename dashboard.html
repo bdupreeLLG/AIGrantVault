@@ -507,7 +507,7 @@
             <div class="logo"><svg style="width:24px; height:24px;"><use href="#icon-lock"></use></svg> AI Grant Vault</div>
             <ul class="nav-links">
                 <li><a href="javascript:void(0)" class="nav-btn nav-action active" data-target="view-dashboard"><svg><use href="#icon-home"></use></svg> Dashboard Home</a></li>
-                <li><a href="javascript:void(0)" class="nav-btn nav-action" data-target="view-dashboard"><svg><use href="#icon-grid"></use></svg> All Modules</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn" onclick="if(window.innerWidth <= 900) toggleMobileMenu(); goTo('view-dashboard'); setTimeout(() => { document.getElementById('dashboard-grid').scrollIntoView({behavior: 'smooth'}) }, 50);"><svg><use href="#icon-grid"></use></svg> All Modules</a></li>
                 <li><a href="javascript:void(0)" class="nav-btn nav-action" data-target="view-downloads"><svg><use href="#icon-download"></use></svg> My Downloads</a></li>
             </ul>
             <ul class="nav-links" style="flex-grow: 0;">
@@ -662,7 +662,7 @@
                     </div>
                     
                     <h1 style="font-size: clamp(2.2rem, 5vw, 3.5rem); color: #fff; font-weight: 800; margin-bottom: 24px; max-width: 900px; line-height: 1.1; position: relative; z-index: 2;">
-                        Stop Spending 40 Hours on a Grant That Takes 4.<br><br>
+                        Stop Spending 40 Hours on a Grant That Takes 4<br><br>
                         <span style="color: var(--primary-color); font-size: clamp(1.2rem, 3vw, 1.8rem); display: block; margin-bottom: 16px;">This AI-powered system teaches you to find, write, and submit winning grant applications in a fraction of the time — and a fraction of the cost.</span>
                         <span style="font-size: clamp(1rem, 2.5vw, 1.4rem); font-weight: 500; display: block; margin-bottom: 8px; color: #fff;">What if you could write 20 grant applications in the time it used to take to write one?</span>
                         <span style="font-size: clamp(1rem, 2.5vw, 1.4rem); font-weight: 500; display: block; margin-bottom: 8px; color: #fff;">How valuable would that be to your organization?</span>
@@ -1023,12 +1023,15 @@
             <!-- DASHBOARD HOME VIEW -->
             <div id="view-dashboard" class="view hide-view">
                 <!-- 1. Welcome Banner -->
-                <div class="glass-card welcome-bar" style="margin-bottom: 60px; display: flex;">
-                    <svg class="gold-accent" style="width: 32px; height: 32px;"><use href="#icon-lock"></use></svg>
-                    <div>
-                        <h3>Welcome back. You are inside the AI Grant Vault.</h3>
-                        <p style="margin: 0; font-size: 0.95rem;">Pick up where you left off or review past modules.</p>
+                <div class="glass-card welcome-bar" style="margin-bottom: 60px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <svg class="gold-accent" style="width: 32px; height: 32px; flex-shrink: 0;"><use href="#icon-lock"></use></svg>
+                        <div>
+                            <h3 style="margin: 0 0 8px 0; color: #fff;">Welcome back. You are inside the AI Grant Vault.</h3>
+                            <p style="margin: 0; font-size: 0.95rem; color: var(--text-secondary);">Pick up where you left off or review past modules.</p>
+                        </div>
                     </div>
+                    <button class="btn" onclick="handleLogout()" style="border: 1px solid var(--primary-color); background: transparent; color: var(--primary-color); font-size: 0.875rem; padding: 8px 16px; border-radius: 4px; white-space: nowrap; font-weight: 600; cursor: pointer;">Log Out</button>
                 </div>
 
                 <!-- 2. Progress Tracker -->
@@ -1892,7 +1895,13 @@ Here are the grant opportunities: [PASTE LIST]</div>
         function handleLogout() {
             localStorage.removeItem('vaultAuth');
             sessionStorage.removeItem('vaultAuth');
-            document.getElementById('login-password').value = '';
+            for(let i=0; i<=6; i++) {
+                localStorage.removeItem('vault-complete-module-' + i);
+            }
+            localStorage.removeItem('completedModules');
+            completedModules = [0];
+            const passEl = document.getElementById('login-password');
+            if(passEl) passEl.value = '';
             setTimeout(() => goTo('view-landing'), 0);
         }
 
@@ -1928,6 +1937,18 @@ Here are the grant opportunities: [PASTE LIST]</div>
         
         const allViews = ['view-landing', 'view-login', 'view-dashboard', 'view-module-0', 'view-module-1', 'view-module-2', 'view-module-3', 'view-module-4', 'view-module-5', 'view-module-6', 'view-downloads'];
         function goTo(viewId) {
+            const sb = document.getElementById('sidebar');
+            const mh = document.getElementById('mobile-header');
+            if(sb && mh) {
+                if(viewId === 'view-landing' || viewId === 'view-login') {
+                    sb.style.display = 'none';
+                    mh.style.display = 'none';
+                } else {
+                    sb.style.display = 'flex';
+                    mh.style.display = '';
+                }
+            }
+
             allViews.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
