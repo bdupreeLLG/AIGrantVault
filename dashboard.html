@@ -473,6 +473,12 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+    
+        div.glow-orb { border-radius: 50% !important; filter: blur(80px) !important; overflow: visible !important; }
+        @media (min-width: 901px) { .vault-door svg { width: 320px; height: 320px; } }
+        @media (min-width: 601px) and (max-width: 900px) { .vault-door svg { width: 260px; height: 260px; } }
+        @media (max-width: 600px) { .vault-door svg { width: 200px; height: 200px; } }
+        
     </style>
 </head>
 <body>
@@ -518,16 +524,17 @@
             
             
             
+            
             <!-- LANDING PAGE VIEW -->
-            <div id="view-landing" class="view hide-view">
+            <div id="view-landing" class="view hide-view" style="width: 100%; overflow: visible;">
                 <!-- HERO SECTION -->
-                <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 100px 24px; position: relative; overflow: hidden;">
+                <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 100px 24px; position: relative; overflow: visible; width: 100%;">
                     <div class="glow-orb orb-1"></div>
                     <div class="glow-orb orb-2"></div>
                     
                     <!-- Premium 3D Vault Door SVG -->
                     <div class="vault-door" style="margin-bottom: 40px; position: relative; z-index: 2;">
-                        <svg width="320" height="320" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" style="animation: pulse-vault-glow 3s ease-in-out infinite;">
+                        <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" style="animation: pulse-vault-glow 3s ease-in-out infinite;">
                             <defs>
                                 <radialGradient id="layer1Outer" cx="50%" cy="50%" r="50%">
                                     <stop offset="70%" stop-color="#2d2d2d"/>
@@ -621,8 +628,6 @@
                                 <circle cx="160" cy="160" r="40" fill="url(#dialMetal)"/>
                                 <circle cx="160" cy="160" r="40" fill="none" stroke="#d4af37" stroke-width="2"/>
                                 
-                                <!-- 40 Tick marks -->
-                                <!-- We generate them via a loop in JS ideally, but we can hardcode the main ones -->
                                 <g stroke-width="1">
                                     <line x1="160" y1="122" x2="160" y2="128" stroke="#d4af37"/>
                                     <line x1="160" y1="192" x2="160" y2="198" stroke="#d4af37"/>
@@ -657,12 +662,15 @@
                     </div>
                     
                     <h1 style="font-size: clamp(2.2rem, 5vw, 3.5rem); color: #fff; font-weight: 800; margin-bottom: 24px; max-width: 900px; line-height: 1.1; position: relative; z-index: 2;">
-                        You Already Have ChatGPT.<br><br>
-                        <span style="color: var(--primary-color);">Here Is Why You Are Still Losing Grants.</span>
+                        Stop Spending 40 Hours on a Grant That Takes 4.<br><br>
+                        <span style="color: var(--primary-color); font-size: clamp(1.2rem, 3vw, 1.8rem); display: block; margin-bottom: 16px;">This AI-powered system teaches you to find, write, and submit winning grant applications in a fraction of the time — and a fraction of the cost.</span>
+                        <span style="font-size: clamp(1rem, 2.5vw, 1.4rem); font-weight: 500; display: block; margin-bottom: 8px; color: #fff;">What if you could write 20 grant applications in the time it used to take to write one?</span>
+                        <span style="font-size: clamp(1rem, 2.5vw, 1.4rem); font-weight: 500; display: block; margin-bottom: 8px; color: #fff;">How valuable would that be to your organization?</span>
+                        <span style="font-size: clamp(1rem, 2.5vw, 1.4rem); font-weight: 500; display: block; color: #fff;">The AI Grant Vault teaches you exactly how.</span>
                     </h1>
                     
                     <p style="font-size: 1.2rem; color: var(--text-secondary); max-width: 800px; margin-bottom: 40px; line-height: 1.6; position: relative; z-index: 2;">
-                        The AI tools exist. The grants exist. What most organizations are missing is the strategy that connects them. The AI Grant Vault is the only system that teaches you how to think like a grant reviewer, find funding your competitors have never heard of, and build a pipeline that generates consistent revenue — not a one-time win.
+                        Use AI to find hyper-local grants, write rubric-aligned proposals, and submit 10 times more applications in the same time — whether you are brand new to grants or looking to scale what you are already doing.
                     </p>
                     
                     <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 48px; position: relative; z-index: 2;">
@@ -671,6 +679,29 @@
                     </div>
 
                     <button class="btn btn-primary" style="font-size: 1.2rem; padding: 18px 48px; position: relative; z-index: 2; border-radius: 50px;" onclick="goTo('view-login')">Enter the Vault</button>
+                </div>
+
+                <!-- AI EFFICIENCY SECTION -->
+                <div style="padding: 80px 24px; max-width: 1000px; margin: 0 auto 80px auto; background: rgba(12, 14, 18, 0.9); border-left: 4px solid var(--primary-color); border-radius: 0 12px 12px 0; opacity: 1; transform: none; visibility: visible;">
+                    <h2 class="section-title" style="color: #fff; font-size: 2.2rem; margin-bottom: 48px; text-align: center;">The Old Way Is Costing You More Than You Think</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 32px; margin-bottom: 48px;">
+                        <div>
+                            <div style="color: var(--primary-color); font-size: 3rem; font-weight: 800; margin-bottom: 12px; line-height: 1;">40 to 100</div>
+                            <h3 style="color: #fff; margin-bottom: 12px; font-size: 1.3rem;">Hours Lost Per Application</h3>
+                            <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.6;">That is the average time grant writers and organizations spend on a single proposal using traditional methods. Most of those hours are research, formatting, and guesswork.</p>
+                        </div>
+                        <div>
+                            <div style="color: var(--primary-color); font-size: 3rem; font-weight: 800; margin-bottom: 12px; line-height: 1;">4 to 6</div>
+                            <h3 style="color: #fff; margin-bottom: 12px; font-size: 1.3rem;">Hours With This System</h3>
+                            <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.6;">Using the AI workflows inside the AI Grant Vault most students complete a full competitive grant application in a single focused session. The system does the heavy lifting.</p>
+                        </div>
+                        <div>
+                            <div style="color: var(--primary-color); font-size: 3rem; font-weight: 800; margin-bottom: 12px; line-height: 1;">20x</div>
+                            <h3 style="color: #fff; margin-bottom: 12px; font-size: 1.3rem;">More Applications in the Same Time</h3>
+                            <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.6;">When each application takes 4 hours instead of 40 you can build a pipeline of 20 qualified grant targets in the same time most writers spend on one. Volume wins.</p>
+                        </div>
+                    </div>
+                    <p style="text-align: center; color: var(--text-secondary); font-size: 1.1rem; font-style: italic;">This is not about working harder. It is about building a system that makes grant funding a repeatable business function rather than a painful one-time event.</p>
                 </div>
 
                 <!-- PROBLEM SECTION -->
@@ -794,6 +825,14 @@
                             <svg class="gold-accent" style="width: 32px; height: 32px; flex-shrink: 0;"><use href="#icon-key"></use></svg>
                             <p style="font-size: 1.05rem; color: #fff; margin: 0;">You are a <strong>freelance grant writer</strong> who wants to add AI-powered strategy to your workflow so you can work faster, win more, and take on more clients.</p>
                         </div>
+
+                        <div class="glass-card" style="display: flex; gap: 20px; align-items: flex-start; padding: 24px;">
+                            <svg class="gold-accent" style="width: 32px; height: 32px; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                            <div>
+                                <h3 style="font-size: 1.05rem; color: #fff; margin-bottom: 8px; margin-top:0;">You are already winning grants — but it is costing you too much time and money.</h3>
+                                <p style="font-size: 1.05rem; color: var(--text-secondary); margin: 0;">If you are spending 30 to 40 hours per application, paying $1,500 or more per proposal, or managing a grant writer who is slow and expensive, this system is built for you. The AI Grant Vault gives you the same quality output in a fraction of the time — completely in-house.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -894,6 +933,7 @@
                     </div>
                 </div>
 
+                
                 <!-- ROI AND VALUE SECTION -->
                 <div style="padding: 0 24px 100px 24px; max-width: 1000px; margin: 0 auto; opacity: 1; transform: none; visibility: visible;">
                     <div class="glass-card" style="border: 1px solid var(--primary-color); box-shadow: 0 0 30px rgba(212,175,55,0.2); text-align: center; padding: 48px 32px;">
@@ -901,7 +941,7 @@
                         <p style="font-size: 1.1rem; color: #fff; max-width: 700px; margin: 0 auto 24px auto; line-height: 1.6;">The average small grant is $10,000. The AI Grant Vault costs $197. If this system helps you win one grant — just one — your return on investment is 5,000 percent. And you keep the system forever. Every grant you write after that is pure return.</p>
                         <p style="font-size: 1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 48px auto; font-style: italic;">This is not a course. It is infrastructure. The kind of infrastructure that serious organizations use to fund their work year after year.</p>
                         
-                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 24px;">
+                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; margin-bottom: 48px;">
                             <div style="border: 1px solid rgba(212,175,55,0.5); padding: 16px 24px; border-radius: 8px; background: rgba(0,0,0,0.4);">
                                 <div style="color: var(--primary-color); font-size: 1.5rem; font-weight: 700;">$197</div>
                                 <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">One-Time Investment</div>
@@ -914,7 +954,12 @@
                                 <div style="color: var(--primary-color); font-size: 1.5rem; font-weight: 700;">50x</div>
                                 <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Return on First Win</div>
                             </div>
+                            <div style="border: 1px solid rgba(212,175,55,0.5); padding: 16px 24px; border-radius: 8px; background: rgba(0,0,0,0.4);">
+                                <div style="color: var(--primary-color); font-size: 1.5rem; font-weight: 700;">10x Faster</div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Application Speed Multiplier</div>
+                            </div>
                         </div>
+                        <p style="font-size: 1rem; color: var(--text-secondary); font-style: italic; max-width: 800px; margin: 0 auto;">Most grant writers charge $1,500 per application and take two to four weeks. This system lets you produce the same quality application in one afternoon — and do it again and again for every grant in your pipeline.</p>
                     </div>
                 </div>
 
