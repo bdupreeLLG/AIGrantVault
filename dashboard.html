@@ -813,7 +813,7 @@
                             <svg class="gold-accent" style="width: 32px; height: 32px; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
                             <div>
                                 <h3 style="font-size: 1.05rem; color: #fff; margin-bottom: 8px; margin-top:0;">You are already winning grants &mdash; but it is costing you too much time and money.</h3>
-                                <p style="font-size: 1.05rem; color: var(--text-secondary); margin: 0;">If you are spending 30 to 40 hours per application, paying ,500 or more per proposal, or managing a grant writer who is slow and expensive, this system is built for you. The AI Grant Vault gives you the same quality output in a fraction of the time &mdash; completely in-house.</p>
+                                <p style="font-size: 1.05rem; color: var(--text-secondary); margin: 0;">If you are spending 30 to 40 hours per application, paying $1,500 or more per proposal, or managing a grant writer who is slow and expensive, this system is built for you. The AI Grant Vault gives you the same quality output in a fraction of the time &mdash; completely in-house.</p>
                             </div>
                         </div>
                         <div class="glass-card" style="display: flex; gap: 20px; align-items: flex-start; padding: 24px;">
@@ -1623,10 +1623,28 @@ Tone: Professional, data-driven, urgent but not desperate. Avoid terms like 'gro
                             <strong style="color: var(--primary-color);">Step 1 &mdash;</strong> <span style="color: var(--text-secondary);">Go to the funder's official grant program page. Look for a PDF or document linked with words like Application Guidelines, Scoring Criteria, Evaluation Rubric, Reviewer Checklist, or Application Instructions. Download and read every attachment on the page.</span>
                         </div>
                         <div style="margin-bottom: 16px;">
-                            <strong style="color: var(--primary-color);">Step 2 &mdash;</strong> <span style="color: var(--text-secondary);">If you cannot find a rubric on the page use this AI prompt to help you locate it. Open Perplexity and paste this exact search: <em>What is the evaluation rubric or scoring criteria for the [Funder Name] [Grant Program Name] grant application? Include any publicly available reviewer guidelines or scoring sheets.</em></span>
+                            <strong style="color: var(--primary-color);">Step 2 &mdash;</strong> <span style="color: var(--text-secondary);">If you cannot find a rubric on the page use this AI prompt to help you locate it. Open Perplexity and paste this exact search: 
+                            <div class="prompt-container" style="margin-top: 12px;">
+                                <div class="prompt-header">
+                                    <span class="prompt-label">MODULE 4 TOOL</span>
+                                    <button class="btn-copy" onclick="copyToClipboard(this, `What is the evaluation rubric or scoring criteria for the [Funder Name] [Grant Program Name] grant application? Include any publicly available reviewer guidelines or scoring sheets.`)">
+                                        <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use></svg> Copy to Clipboard
+                                    </button>
+                                </div>
+                                <div class="prompt-body">What is the evaluation rubric or scoring criteria for the [Funder Name] [Grant Program Name] grant application? Include any publicly available reviewer guidelines or scoring sheets.</div>
+                            </div></span>
                         </div>
                         <div style="margin-bottom: 16px;">
-                            <strong style="color: var(--primary-color);">Step 3 &mdash;</strong> <span style="color: var(--text-secondary);">If Perplexity cannot find it email the program officer directly. Most program officers will share the rubric or at minimum tell you the weighted categories. Use this template: <em>Hello [Name], I am preparing an application for the [Grant Program Name]. Could you tell me if a scoring rubric or evaluation criteria document is available for applicants to review? I want to make sure my proposal is well-aligned with your priorities. Thank you.</em></span>
+                            <strong style="color: var(--primary-color);">Step 3 &mdash;</strong> <span style="color: var(--text-secondary);">If Perplexity cannot find it email the program officer directly. Most program officers will share the rubric or at minimum tell you the weighted categories. Use this template: 
+                            <div class="prompt-container" style="margin-top: 12px;">
+                                <div class="prompt-header">
+                                    <span class="prompt-label">EMAIL TEMPLATE</span>
+                                    <button class="btn-copy" onclick="copyToClipboard(this, `Hello [Name], I am preparing an application for the [Grant Program Name]. Could you tell me if a scoring rubric or evaluation criteria document is available for applicants to review? I want to make sure my proposal is well-aligned with your priorities. Thank you.`)">
+                                        <svg style="width:16px; height:16px; margin-right:4px;"><use href="#icon-copy"></use></svg> Copy to Clipboard
+                                    </button>
+                                </div>
+                                <div class="prompt-body">Hello [Name], I am preparing an application for the [Grant Program Name]. Could you tell me if a scoring rubric or evaluation criteria document is available for applicants to review? I want to make sure my proposal is well-aligned with your priorities. Thank you.</div>
+                            </div></span>
                         </div>
                         <div style="margin-bottom: 0;">
                             <strong style="color: var(--primary-color);">Step 4 &mdash;</strong> <span style="color: var(--text-secondary);">If no rubric exists anywhere use the funder's stated priorities from their website as a proxy. Copy their mission statement and funding focus areas and paste them into Claude with this prompt: <em>Based on these funder priorities, create a mock evaluation rubric with 5 to 7 weighted categories I should optimize my proposal for.</em> Then use that mock rubric in the Final Rubric Polish prompt.</span>
